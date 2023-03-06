@@ -1,1 +1,0 @@
-# mehmetkrvar.github.io
