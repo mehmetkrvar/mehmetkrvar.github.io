@@ -1,94 +1,31 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaksiler Arası Aşk Hikayesi</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        h1 {
-            color: #ff8c00;
-        }
-        #game-container {
-            margin-top: 50px;
-        }
-        #intro p, #story {
-            font-size: 18px;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            border: none;
-            background-color: #ff8c00;
-            color: white;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #ff5722;
-        }
-        #game-screen {
-            display: none;
-        }
-    </style>
+    <title>Orbiting Hearts ❤️</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div id="game-container">
-    <h1>Galaksiler Arası Aşk Hikayesi</h1>
-    <div id="intro">
-        <p>Bir sinyal aldınız. Bu sinyal, kaybolmuş bir aşkın yankısı gibi görünüyor. Sinyalin kaynağını bulmalısınız.</p>
-        <button id="start-btn">Başla</button>
+    <div id="game-container">
+        <h1>Orbiting Hearts ❤️</h1>
+        <div id="orbit-container">
+            <div class="orbit" id="orbit-1">
+                <div class="astronaut" id="astronaut-1"></div>
+            </div>
+            <div class="orbit" id="orbit-2">
+                <div class="astronaut" id="astronaut-2"></div>
+            </div>
+        </div>
+        <div id="controls">
+            <button id="move-left">Move Left</button>
+            <button id="move-right">Move Right</button>
+        </div>
+        <div id="scoreboard">
+            <span>Distance: <span id="distance">100</span> km</span>
+        </div>
     </div>
 
-    <div id="game-screen" style="display:none;">
-        <p id="story"></p>
-        <button id="next-btn">Sonraki</button>
-    </div>
-</div>
-
-<script>
-    const startBtn = document.getElementById('start-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const gameScreen = document.getElementById('game-screen');
-    const introScreen = document.getElementById('intro');
-    const storyText = document.getElementById('story');
-
-    let currentScene = 0;
-    const storyScenes = [
-        "Sinyali aldınız. Galaksiler arası bir aşkın gizemini çözmeye hazırsınız. İlk olarak, eski bir uygarlığın gezegenine gitmelisiniz.",
-        "Bu gezegende, kaybolmuş bir aşkın izlerini bulduğunuzu öğreniyorsunuz. Eski kalıntılarda bir mesaj var: 'Beni bul, kaybolmuş kalbimi.'",
-        "Mesajı çözdünüz ve bir sonraki gezegene gitmek için hazırlık yapıyorsunuz. Burada aşkın hikayesini daha da derinlemesine keşfedeceksiniz.",
-        "Yeni gezegenin atmosferi bir başka zaman diliminde. Bu gezegende aşkın izlerini bulmak zor. Ancak, kalbinizin sesini takip etmelisiniz.",
-        "Sonunda, kaybolmuş aşkın yankılarını buldunuz. Ancak, belki de gerçek aşkı bulmak için geçmişi bırakıp, geleceğe bakmanız gerekiyordur."
-    ];
-
-    startBtn.addEventListener('click', () => {
-        introScreen.style.display = 'none';
-        gameScreen.style.display = 'block';
-        storyText.textContent = storyScenes[currentScene];
-    });
-
-    nextBtn.addEventListener('click', () => {
-        currentScene++;
-        if (currentScene < storyScenes.length) {
-            storyText.textContent = storyScenes[currentScene];
-        } else {
-            storyText.textContent = "Tüm gezegenleri ziyaret ettiniz ve kaybolmuş aşkın sırrını çözebildiniz. Şimdi gerçek aşkınızı aramaya hazırsınız!";
-            nextBtn.style.display = 'none';
-        }
-    });
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
