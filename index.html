@@ -3,116 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonsuz Aşk Yolu</title>
+    <title>Galaksiler Arası Aşk Hikayesi</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: black;
-            flex-direction: column;
-            overflow: hidden;
             font-family: Arial, sans-serif;
-            position: relative;
-        }
-        .netflix-heart {
-            font-size: 100px;
-            color: red;
-            animation: netflixIntro 2s ease-in-out forwards;
-            opacity: 0;
-        }
-        @keyframes netflixIntro {
-            0% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1.5); }
-            100% { transform: scale(1); }
-        }
-        .game-container {
-            display: none;
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-        .star {
-            width: 30px;
-            height: 30px;
-            background: yellow;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            box-shadow: 0 0 10px yellow;
-            transition: transform 0.1s;
-        }
-        .heart-goal {
-            width: 80px;
-            height: 80px;
-            background: red;
-            position: absolute;
-            transform: rotate(-45deg);
-            animation: pulse 1.5s infinite alternate;
-        }
-        .heart-goal:before, .heart-goal:after {
-            content: '';
-            width: 80px;
-            height: 80px;
-            background: red;
-            border-radius: 50%;
-            position: absolute;
-        }
-        .heart-goal:before {
-            top: -40px;
-            left: 0;
-        }
-        .heart-goal:after {
-            left: 40px;
-            top: 0;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1) rotate(-45deg); }
-            100% { transform: scale(1.1) rotate(-45deg); }
-        }
-        .message {
-            font-size: 24px;
-            font-weight: bold;
+            background-color: #121212;
             color: white;
-            opacity: 0;
-            transition: opacity 1s, transform 1s;
-            margin-top: 20px;
-            position: absolute;
-            top: 10%;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #ff8c00;
+        }
+        #game-container {
+            margin-top: 50px;
+        }
+        #intro p, #story {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            background-color: #ff8c00;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff5722;
+        }
+        #game-screen {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="netflix-heart">❤️</div>
-    <div class="game-container">
-        <div class="star" id="star"></div>
-        <div class="heart-goal" id="heartGoal"></div>
+
+<div id="game-container">
+    <h1>Galaksiler Arası Aşk Hikayesi</h1>
+    <div id="intro">
+        <p>Bir sinyal aldınız. Bu sinyal, kaybolmuş bir aşkın yankısı gibi görünüyor. Sinyalin kaynağını bulmalısınız.</p>
+        <button id="start-btn">Başla</button>
     </div>
-    <div class="message" id="resultMessage"></div>
-    
-    <script>
-        setTimeout(() => {
-            document.querySelector('.netflix-heart').style.display = 'none';
-            document.querySelector('.game-container').style.display = 'block';
-        }, 2500);
-        
-        const star = document.getElementById("star");
-        const heartGoal = document.getElementById("heartGoal");
-        heartGoal.style.top = Math.random() * (window.innerHeight - 100) + "px";
-        heartGoal.style.left = Math.random() * (window.innerWidth - 100) + "px";
-        
-        document.addEventListener("mousemove", (e) => {
-            star.style.left = e.clientX + "px";
-            star.style.top = e.clientY + "px";
-            if (Math.abs(e.clientX - heartGoal.offsetLeft) < 50 && Math.abs(e.clientY - heartGoal.offsetTop) < 50) {
-                document.getElementById("resultMessage").innerHTML = "Tebrikler! Mehmet Karvar seni çooook seviyor! ❤️";
-                document.getElementById("resultMessage").style.opacity = "1";
-                document.getElementById("resultMessage").style.color = "#ff0";
-            }
-        });
-    </script>
+
+    <div id="game-screen" style="display:none;">
+        <p id="story"></p>
+        <button id="next-btn">Sonraki</button>
+    </div>
+</div>
+
+<script>
+    const startBtn = document.getElementById('start-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const gameScreen = document.getElementById('game-screen');
+    const introScreen = document.getElementById('intro');
+    const storyText = document.getElementById('story');
+
+    let currentScene = 0;
+    const storyScenes = [
+        "Sinyali aldınız. Galaksiler arası bir aşkın gizemini çözmeye hazırsınız. İlk olarak, eski bir uygarlığın gezegenine gitmelisiniz.",
+        "Bu gezegende, kaybolmuş bir aşkın izlerini bulduğunuzu öğreniyorsunuz. Eski kalıntılarda bir mesaj var: 'Beni bul, kaybolmuş kalbimi.'",
+        "Mesajı çözdünüz ve bir sonraki gezegene gitmek için hazırlık yapıyorsunuz. Burada aşkın hikayesini daha da derinlemesine keşfedeceksiniz.",
+        "Yeni gezegenin atmosferi bir başka zaman diliminde. Bu gezegende aşkın izlerini bulmak zor. Ancak, kalbinizin sesini takip etmelisiniz.",
+        "Sonunda, kaybolmuş aşkın yankılarını buldunuz. Ancak, belki de gerçek aşkı bulmak için geçmişi bırakıp, geleceğe bakmanız gerekiyordur."
+    ];
+
+    startBtn.addEventListener('click', () => {
+        introScreen.style.display = 'none';
+        gameScreen.style.display = 'block';
+        storyText.textContent = storyScenes[currentScene];
+    });
+
+    nextBtn.addEventListener('click', () => {
+        currentScene++;
+        if (currentScene < storyScenes.length) {
+            storyText.textContent = storyScenes[currentScene];
+        } else {
+            storyText.textContent = "Tüm gezegenleri ziyaret ettiniz ve kaybolmuş aşkın sırrını çözebildiniz. Şimdi gerçek aşkınızı aramaya hazırsınız!";
+            nextBtn.style.display = 'none';
+        }
+    });
+</script>
+
 </body>
 </html>
