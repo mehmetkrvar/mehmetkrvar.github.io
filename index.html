@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aşk Oyunu</title>
+    <title>Sonsuz Aşk Yolu</title>
     <style>
         body {
             display: flex;
@@ -14,6 +14,7 @@
             flex-direction: column;
             overflow: hidden;
             font-family: Arial, sans-serif;
+            position: relative;
         }
         .netflix-heart {
             font-size: 100px;
@@ -28,24 +29,31 @@
         }
         .game-container {
             display: none;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 50px;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
         }
-        .heart {
+        .star {
+            width: 30px;
+            height: 30px;
+            background: yellow;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            box-shadow: 0 0 10px yellow;
+            transition: transform 0.1s;
+        }
+        .heart-goal {
             width: 80px;
             height: 80px;
             background: red;
-            position: relative;
+            position: absolute;
             transform: rotate(-45deg);
-            cursor: pointer;
             animation: pulse 1.5s infinite alternate;
-            transition: transform 0.3s;
         }
-        .heart:hover {
-            transform: scale(1.2) rotate(-45deg);
-        }
-        .heart:before, .heart:after {
+        .heart-goal:before, .heart-goal:after {
             content: '';
             width: 80px;
             height: 80px;
@@ -53,11 +61,11 @@
             border-radius: 50%;
             position: absolute;
         }
-        .heart:before {
+        .heart-goal:before {
             top: -40px;
             left: 0;
         }
-        .heart:after {
+        .heart-goal:after {
             left: 40px;
             top: 0;
         }
@@ -72,61 +80,39 @@
             opacity: 0;
             transition: opacity 1s, transform 1s;
             margin-top: 20px;
-        }
-        .hearts-flying {
             position: absolute;
-            font-size: 30px;
-            color: pink;
-            animation: fly 3s linear infinite;
-        }
-        @keyframes fly {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-200px); opacity: 0; }
+            top: 10%;
         }
     </style>
 </head>
 <body>
     <div class="netflix-heart">❤️</div>
     <div class="game-container">
-        <div class="heart" onclick="checkHeart(0)"></div>
-        <div class="heart" onclick="checkHeart(1)"></div>
-        <div class="heart" onclick="checkHeart(2)"></div>
+        <div class="star" id="star"></div>
+        <div class="heart-goal" id="heartGoal"></div>
     </div>
     <div class="message" id="resultMessage"></div>
     
     <script>
-        let correctHeart = Math.floor(Math.random() * 3);
-        let hasClicked = false;
         setTimeout(() => {
             document.querySelector('.netflix-heart').style.display = 'none';
-            document.querySelector('.game-container').style.display = 'flex';
+            document.querySelector('.game-container').style.display = 'block';
         }, 2500);
         
-        function checkHeart(index) {
-            if (hasClicked) return;
-            hasClicked = true;
-            const message = document.getElementById('resultMessage');
-            if (index === correctHeart) {
-                message.innerHTML = "Tebrikler! Mehmet Karvar seni çooook seviyor! ❤️";
-                message.style.color = "#ff0";
-                for (let i = 0; i < 10; i++) {
-                    let heart = document.createElement('div');
-                    heart.classList.add('hearts-flying');
-                    heart.innerHTML = '❤️';
-                    heart.style.left = Math.random() * window.innerWidth + 'px';
-                    heart.style.top = Math.random() * window.innerHeight + 'px';
-                    document.body.appendChild(heart);
-                    setTimeout(() => heart.remove(), 3000);
-                }
-            } else {
-                message.innerHTML = "Üzgünüm, yanlış seçim! 😢";
-                message.style.color = "red";
-                document.body.style.background = "#300";
-                setTimeout(() => document.body.style.background = "black", 1000);
+        const star = document.getElementById("star");
+        const heartGoal = document.getElementById("heartGoal");
+        heartGoal.style.top = Math.random() * (window.innerHeight - 100) + "px";
+        heartGoal.style.left = Math.random() * (window.innerWidth - 100) + "px";
+        
+        document.addEventListener("mousemove", (e) => {
+            star.style.left = e.clientX + "px";
+            star.style.top = e.clientY + "px";
+            if (Math.abs(e.clientX - heartGoal.offsetLeft) < 50 && Math.abs(e.clientY - heartGoal.offsetTop) < 50) {
+                document.getElementById("resultMessage").innerHTML = "Tebrikler! Mehmet Karvar seni çooook seviyor! ❤️";
+                document.getElementById("resultMessage").style.opacity = "1";
+                document.getElementById("resultMessage").style.color = "#ff0";
             }
-            message.style.opacity = "1";
-            message.style.transform = "translateY(20px)";
-        }
+        });
     </script>
 </body>
 </html>
