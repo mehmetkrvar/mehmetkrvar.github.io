@@ -1,31 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orbiting Hearts ❤️</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Moonlit Memories</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1d2b64, #f8cdda);
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #ff8a80;
+        }
+
+        #gameTitle {
+            margin-bottom: 20px;
+        }
+
+        .planet {
+            position: relative;
+            margin-top: 20px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffcae9, #b56b91);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            animation: float 5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .message {
+            font-size: 1.5em;
+            margin-top: 20px;
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #ff8a80;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #ff5e57;
+        }
+
+        .character {
+            position: absolute;
+            bottom: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #character1 {
+            left: 60px;
+        }
+
+        #character2 {
+            right: 60px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <h1>Orbiting Hearts ❤️</h1>
-        <div id="orbit-container">
-            <div class="orbit" id="orbit-1">
-                <div class="astronaut" id="astronaut-1"></div>
-            </div>
-            <div class="orbit" id="orbit-2">
-                <div class="astronaut" id="astronaut-2"></div>
-            </div>
+
+    <div class="container">
+        <div id="gameTitle">
+            <h1>Moonlit Memories</h1>
+            <p>İki karakterin arasındaki bağları keşfedin</p>
         </div>
-        <div id="controls">
-            <button id="move-left">Move Left</button>
-            <button id="move-right">Move Right</button>
+
+        <div class="planet">
+            <div id="character1" class="character"></div>
+            <div id="character2" class="character"></div>
         </div>
-        <div id="scoreboard">
-            <span>Distance: <span id="distance">100</span> km</span>
-        </div>
+
+        <div class="message" id="message">Gecenin ışıkları altında, aralarındaki bağ her geçen dakika büyüyor...</div>
+        
+        <button class="button" id="nextStepBtn">Birlikte Bir Anı Yarat!</button>
     </div>
 
-    <script src="script.js"></script>
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // Variables
+        let messageIndex = 0;
+        let messages = [
+            "Gece yıldızları altında göz göze gelmek...",
+            "Birlikte yavaşça yürüyüş yapmak...",
+            "Birbirlerine holografik mesajlar bırakmak...",
+            "İlk kez ellerini tutmak...",
+            "Gözlerinde sevgi dolu bakışlar... Sonunda bir araya gelmek için umut var."
+        ];
+
+        // Background Music
+        const bgMusic = document.getElementById("bgMusic");
+        bgMusic.play();
+
+        // Planet Animation and Character Movement
+        const character1 = document.getElementById("character1");
+        const character2 = document.getElementById("character2");
+        const nextStepBtn = document.getElementById("nextStepBtn");
+        const messageElement = document.getElementById("message");
+
+        function animateCharacters() {
+            character1.style.transition = "transform 1s";
+            character2.style.transition = "transform 1s";
+
+            character1.style.transform = "translateX(100px)";
+            character2.style.transform = "translateX(-100px)";
+        }
+
+        function changeMessage() {
+            if (messageIndex < messages.length) {
+                messageElement.textContent = messages[messageIndex];
+                messageIndex++;
+            } else {
+                messageElement.textContent = "Sonunda, birbirlerine kavuşacaklar.";
+                nextStepBtn.style.display = "none"; // End the game
+            }
+        }
+
+        nextStepBtn.addEventListener("click", () => {
+            animateCharacters();
+            setTimeout(() => {
+                changeMessage();
+                character1.style.transform = "translateX(0)";
+                character2.style.transform = "translateX(0)";
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
