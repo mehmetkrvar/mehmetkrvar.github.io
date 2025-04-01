@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aşk Dolu Oyun</title>
+    <title>Aşk Oyunu</title>
     <style>
         body {
             display: flex;
@@ -11,13 +11,15 @@
             align-items: center;
             height: 100vh;
             background: black;
-            overflow: hidden;
             flex-direction: column;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
         }
         .netflix-heart {
             font-size: 100px;
             color: red;
-            animation: netflixIntro 2s ease-in-out;
+            animation: netflixIntro 2s ease-in-out forwards;
+            opacity: 0;
         }
         @keyframes netflixIntro {
             0% { opacity: 0; transform: scale(0); }
@@ -25,7 +27,7 @@
             100% { transform: scale(1); }
         }
         .game-container {
-            display: flex;
+            display: none;
             justify-content: center;
             gap: 30px;
             margin-top: 50px;
@@ -37,7 +39,11 @@
             position: relative;
             transform: rotate(-45deg);
             cursor: pointer;
-            animation: pulse 1.5s infinite;
+            animation: pulse 1.5s infinite alternate;
+            transition: transform 0.3s;
+        }
+        .heart:hover {
+            transform: scale(1.2) rotate(-45deg);
         }
         .heart:before, .heart:after {
             content: '';
@@ -56,12 +62,8 @@
             top: 0;
         }
         @keyframes pulse {
-            0%, 100% {
-                transform: scale(1) rotate(-45deg);
-            }
-            50% {
-                transform: scale(1.2) rotate(-45deg);
-            }
+            0% { transform: scale(1) rotate(-45deg); }
+            100% { transform: scale(1.1) rotate(-45deg); }
         }
         .message {
             font-size: 24px;
@@ -70,6 +72,16 @@
             opacity: 0;
             transition: opacity 1s, transform 1s;
             margin-top: 20px;
+        }
+        .hearts-flying {
+            position: absolute;
+            font-size: 30px;
+            color: pink;
+            animation: fly 3s linear infinite;
+        }
+        @keyframes fly {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-200px); opacity: 0; }
         }
     </style>
 </head>
@@ -85,17 +97,32 @@
     <script>
         let correctHeart = Math.floor(Math.random() * 3);
         let hasClicked = false;
+        setTimeout(() => {
+            document.querySelector('.netflix-heart').style.display = 'none';
+            document.querySelector('.game-container').style.display = 'flex';
+        }, 2500);
         
         function checkHeart(index) {
             if (hasClicked) return;
             hasClicked = true;
             const message = document.getElementById('resultMessage');
             if (index === correctHeart) {
-                message.innerHTML = "Tebrikler! Mehmet Karvar seni çook seviyor! ❤️";
+                message.innerHTML = "Tebrikler! Mehmet Karvar seni çooook seviyor! ❤️";
                 message.style.color = "#ff0";
+                for (let i = 0; i < 10; i++) {
+                    let heart = document.createElement('div');
+                    heart.classList.add('hearts-flying');
+                    heart.innerHTML = '❤️';
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    heart.style.top = Math.random() * window.innerHeight + 'px';
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 3000);
+                }
             } else {
                 message.innerHTML = "Üzgünüm, yanlış seçim! 😢";
                 message.style.color = "red";
+                document.body.style.background = "#300";
+                setTimeout(() => document.body.style.background = "black", 1000);
             }
             message.style.opacity = "1";
             message.style.transform = "translateY(20px)";
