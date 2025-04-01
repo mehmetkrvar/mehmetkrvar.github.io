@@ -3,10 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benim Web Sitem</title>
+    <title>Aşk Dolu Kalp</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            overflow: hidden;
+        }
+        .container {
+            position: relative;
+            cursor: pointer;
+        }
+        .heart {
+            width: 100px;
+            height: 100px;
+            background: red;
+            position: relative;
+            transform: rotate(-45deg);
+            animation: pulse 1.5s infinite;
+        }
+        .heart:before,
+        .heart:after {
+            content: '';
+            width: 100px;
+            height: 100px;
+            background: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .heart:before {
+            top: -50px;
+            left: 0;
+        }
+        .heart:after {
+            left: 50px;
+            top: 0;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1) rotate(-45deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(-45deg);
+            }
+        }
+        .text {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+    </style>
 </head>
 <body>
-    <h1>Merhaba Dünya!</h1>
-    <p>Bu benim GitHub Pages ile oluşturduğum web sitem.</p>
+    <div class="container" onclick="showLove()">
+        <div class="heart"></div>
+        <div class="text" id="loveText">Seni Çok Seviyorum! ❤️</div>
+    </div>
+
+    <script>
+        function showLove() {
+            const text = document.getElementById('loveText');
+            text.style.opacity = '1';
+            text.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                text.style.opacity = '0';
+                text.style.transform = 'translateY(0)';
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
