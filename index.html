@@ -3,46 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonsuz Aşk</title>
+    <title>Romantik Büyüme</title>
     <style>
         body {
-            background-color: #ffe6e6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #fff0f5;
+            font-family: Arial, sans-serif;
             text-align: center;
-            font-family: 'Arial', sans-serif;
-            color: #d6336c;
         }
-        h1 {
-            font-size: 3rem;
-            margin-top: 50px;
+        #bar {
+            width: 10px;
+            height: 30px;
+            background-color: pink;
+            transition: width 0.5s, height 0.5s;
         }
-        .heart {
-            font-size: 5rem;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .heart:hover {
-            transform: scale(1.2);
-        }
-        .message {
-            display: none;
-            font-size: 1.5rem;
+        #message {
             margin-top: 20px;
-            animation: fadeIn 2s;
+            font-size: 1.2em;
+            color: #d63384;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        #counter {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <h1>Aşkın İçin Tıkla!</h1>
-    <div class="heart" onclick="showMessage()">❤️</div>
-    <div class="message" id="message">Sonsuza kadar seninleyim! 💖</div>
+    <div id="bar"></div>
+    <p id="counter">Birim: 10</p>
+    <p id="message">Yasemin, seninle her an çok özel.</p>
     <script>
-        function showMessage() {
-            document.getElementById("message").style.display = "block";
+        let width = 10;
+        const messages = [
+            "Yasemin, gülüşün güneş gibi.",
+            "Seninle her an bir bahar.",
+            "Gözlerin yıldızların ışığı gibi parlıyor.",
+            "Senin yanındayken zaman duruyor.",
+            "Sonsuza dek seninle olmak istiyorum.",
+            "Aşkın ruhumu aydınlatıyor.",
+            "Sen benim kalbimin en güzel melodisisin."
+        ];
+        let index = 0;
+        
+        function growBar() {
+            if (width < 17) {
+                width += 1;
+                document.getElementById('bar').style.width = width + 'px';
+                document.getElementById('counter').innerText = "Birim: " + width;
+                document.getElementById('message').innerText = messages[index % messages.length];
+                index++;
+                setTimeout(growBar, 1000);
+            } else {
+                document.getElementById('bar').style.height = "50px";
+                document.getElementById('message').innerText = "BEN ÇANAKKALEYİM, BEN GEÇİLMEZİM!";
+            }
         }
+        
+        setTimeout(growBar, 1000);
     </script>
 </body>
 </html>
