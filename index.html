@@ -3,68 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Romantik Büyüme</title>
+    <title>Uzay Temalı Site</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #fff0f5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             font-family: Arial, sans-serif;
+        }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url('https://example.com/space-image.jpg') center center/cover no-repeat;
+            animation: starrySky 30s linear infinite;
+        }
+        @keyframes starrySky {
+            from {background-position: 0 0;}
+            to {background-position: 100% 100%;}
+        }
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            animation: twinkle 1.5s infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0% {opacity: 0.2;}
+            50% {opacity: 0.8;}
+            100% {opacity: 0.2;}
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            width: 2px;
+            height: 2px;
+            animation: moveStars 3s infinite linear;
+        }
+        @keyframes moveStars {
+            from {
+                transform: translateY(0) translateX(0);
+            }
+            to {
+                transform: translateY(100vh) translateX(100vw);
+            }
+        }
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
             text-align: center;
         }
-        #bar {
-            width: 10px;
-            height: 30px;
-            background-color: pink;
-            transition: width 0.5s, height 0.5s;
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
         }
-        #message {
-            margin-top: 20px;
+        p {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 15px 30px;
             font-size: 1.2em;
-            color: #d63384;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff4500;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        #counter {
-            margin-top: 10px;
-            font-size: 1em;
-            color: #555;
+        button:hover {
+            background-color: #ff6347;
         }
     </style>
 </head>
 <body>
-    <div id="bar"></div>
-    <p id="counter">Birim: 10</p>
-    <p id="message">Yasemin, seninle her an çok özel.</p>
-    <script>
-        let width = 10;
-        const messages = [
-            "Yasemin, gülüşün güneş gibi.",
-            "Seninle her an bir bahar.",
-            "Gözlerin yıldızların ışığı gibi parlıyor.",
-            "Senin yanındayken zaman duruyor.",
-            "Sonsuza dek seninle olmak istiyorum.",
-            "Aşkın ruhumu aydınlatıyor.",
-            "Sen benim kalbimin en güzel melodisisin."
-        ];
-        let index = 0;
-        
-        function growBar() {
-            if (width < 17) {
-                width += 1;
-                document.getElementById('bar').style.width = width + 'px';
-                document.getElementById('counter').innerText = "Birim: " + width;
-                document.getElementById('message').innerText = messages[index % messages.length];
-                index++;
-                setTimeout(growBar, 1000);
-            } else {
-                document.getElementById('bar').style.height = "50px";
-                document.getElementById('message').innerText = "BEN ÇANAKKALEYİM, BEN GEÇİLMEZİM!";
-            }
+
+<div class="background"></div>
+<div class="stars">
+    <!-- Yıldızlar için dinamik olarak JavaScript ile star div'leri ekleyeceğiz -->
+</div>
+
+<div class="content">
+    <h1>Uzaya Hoşgeldiniz!</h1>
+    <p>Uzayın derinliklerinde bir yolculuğa çıkmaya hazır olun!</p>
+    <button onclick="alert('Uzay yolculuğu başlıyor!')">Yolculuğa Başla</button>
+</div>
+
+<script>
+    // Yıldızları oluşturmak için JavaScript kodu
+    function createStars() {
+        const starContainer = document.querySelector('.stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.animationDuration = Math.random() * 3 + 's';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starContainer.appendChild(star);
         }
-        
-        setTimeout(growBar, 1000);
-    </script>
+    }
+
+    createStars();
+</script>
+
 </body>
 </html>
