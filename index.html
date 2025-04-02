@@ -1,1 +1,48 @@
-
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonsuz Aşk</title>
+    <style>
+        body {
+            background-color: #ffe6e6;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            color: #d6336c;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-top: 50px;
+        }
+        .heart {
+            font-size: 5rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .heart:hover {
+            transform: scale(1.2);
+        }
+        .message {
+            display: none;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            animation: fadeIn 2s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Aşkın İçin Tıkla!</h1>
+    <div class="heart" onclick="showMessage()">❤️</div>
+    <div class="message" id="message">Sonsuza kadar seninleyim! 💖</div>
+    <script>
+        function showMessage() {
+            document.getElementById("message").style.display = "block";
+        }
+    </script>
+</body>
+</html>
