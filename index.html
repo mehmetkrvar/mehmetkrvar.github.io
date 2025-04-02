@@ -61,6 +61,7 @@
             transform: translate(-50%, -50%);
             color: white;
             text-align: center;
+            z-index: 2;
         }
         h1 {
             font-size: 3em;
@@ -83,13 +84,29 @@
         button:hover {
             background-color: #ff6347;
         }
+        .space-ship {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: shipFly 10s infinite linear;
+            z-index: 1;
+        }
+        @keyframes shipFly {
+            0% {transform: translateX(-50%) translateY(0);}
+            50% {transform: translateX(-50%) translateY(-20%);}
+            100% {transform: translateX(-50%) translateY(0);}
+        }
     </style>
 </head>
 <body>
 
 <div class="background"></div>
-<div class="stars">
-    <!-- Yıldızlar için dinamik olarak JavaScript ile star div'leri ekleyeceğiz -->
+<div class="stars"></div>
+
+<!-- Uzay Gemisi -->
+<div class="space-ship">
+    <img src="https://example.com/spaceship.png" alt="Uzay Gemisi" width="100">
 </div>
 
 <div class="content">
