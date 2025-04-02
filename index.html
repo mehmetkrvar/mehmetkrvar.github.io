@@ -5,133 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uzay Temalı Site</title>
     <style>
+        /* Arka plan Resmi */
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            font-family: Arial, sans-serif;
+            background: url('https://example.com/space-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
         }
-        .background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url('https://example.com/space-image.jpg') center center/cover no-repeat;
-            animation: starrySky 30s linear infinite;
-        }
-        @keyframes starrySky {
-            from {background-position: 0 0;}
-            to {background-position: 100% 100%;}
-        }
-        .stars {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            animation: twinkle 1.5s infinite ease-in-out;
-        }
-        @keyframes twinkle {
-            0% {opacity: 0.2;}
-            50% {opacity: 0.8;}
-            100% {opacity: 0.2;}
-        }
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            width: 2px;
-            height: 2px;
-            animation: moveStars 3s infinite linear;
-        }
-        @keyframes moveStars {
-            from {
-                transform: translateY(0) translateX(0);
-            }
-            to {
-                transform: translateY(100vh) translateX(100vw);
-            }
-        }
-        .content {
+
+        /* Sayfa Ortası Konumlandırma */
+        #message {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            font-size: 30px;
             color: white;
             text-align: center;
-            z-index: 2;
+            display: none;
         }
-        h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 15px 30px;
-            font-size: 1.2em;
-            border: none;
-            border-radius: 5px;
-            background-color: #ff4500;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #ff6347;
-        }
-        .space-ship {
+
+        /* Gezegenler için Temel Stil */
+        .planet {
             position: absolute;
-            bottom: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: shipFly 10s infinite linear;
-            z-index: 1;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #4b7b9f;
+            animation: movePlanet 10s linear infinite;
         }
-        @keyframes shipFly {
-            0% {transform: translateX(-50%) translateY(0);}
-            50% {transform: translateX(-50%) translateY(-20%);}
-            100% {transform: translateX(-50%) translateY(0);}
+
+        .planet2 {
+            background-color: #c07c61;
+        }
+
+        /* Gezegen hareketi için animasyon */
+        @keyframes movePlanet {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+            50% {
+                transform: translateX(500px) translateY(200px);
+            }
+            100% {
+                transform: translateX(0) translateY(0);
+            }
+        }
+
+        /* Çarpışma animasyonu */
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="background"></div>
-<div class="stars"></div>
+    <!-- Gezegen 1 -->
+    <div class="planet" id="planet1"></div>
+    <!-- Gezegen 2 -->
+    <div class="planet planet2" id="planet2"></div>
 
-<!-- Uzay Gemisi -->
-<div class="space-ship">
-    <img src="https://example.com/spaceship.png" alt="Uzay Gemisi" width="100">
-</div>
+    <!-- Mesaj -->
+    <div id="message">Bazen çok da kasmamak gerekir.</div>
 
-<div class="content">
-    <h1>Uzaya Hoşgeldiniz!</h1>
-    <p>Uzayın derinliklerinde bir yolculuğa çıkmaya hazır olun!</p>
-    <button onclick="alert('Uzay yolculuğu başlıyor!')">Yolculuğa Başla</button>
-</div>
+    <script>
+        // Gezegenler ve hareket fonksiyonları
+        let planet1 = document.getElementById('planet1');
+        let planet2 = document.getElementById('planet2');
+        let message = document.getElementById('message');
 
-<script>
-    // Yıldızları oluşturmak için JavaScript kodu
-    function createStars() {
-        const starContainer = document.querySelector('.stars');
-        for (let i = 0; i < 100; i++) {
-            const star = document.createElement('div');
-            star.classList.add('star');
-            star.style.top = Math.random() * 100 + 'vh';
-            star.style.left = Math.random() * 100 + 'vw';
-            star.style.animationDuration = Math.random() * 3 + 's';
-            star.style.animationDelay = Math.random() * 3 + 's';
-            starContainer.appendChild(star);
+        // Gezegenlerin başlangıç konumları
+        let planet1Pos = { x: 0, y: 0 };
+        let planet2Pos = { x: 600, y: 300 };
+
+        // Yörüngede hareket etmeleri için fonksiyon
+        function movePlanets() {
+            planet1.style.left = planet1Pos.x + 'px';
+            planet1.style.top = planet1Pos.y + 'px';
+
+            planet2.style.left = planet2Pos.x + 'px';
+            planet2.style.top = planet2Pos.y + 'px';
+
+            planet1Pos.x += 2;
+            planet1Pos.y += 1;
+            planet2Pos.x -= 2;
+            planet2Pos.y -= 1;
+
+            // Çarpışma kontrolü
+            if (Math.abs(planet1Pos.x - planet2Pos.x) < 50 && Math.abs(planet1Pos.y - planet2Pos.y) < 50) {
+                planet1.style.animation = 'explode 1s forwards';
+                planet2.style.animation = 'explode 1s forwards';
+                setTimeout(function() {
+                    message.style.display = 'block';
+                }, 1000);
+            }
         }
-    }
 
-    createStars();
-</script>
+        // Gezegenleri hareket ettir
+        setInterval(movePlanets, 20);
+    </script>
 
 </body>
 </html>
