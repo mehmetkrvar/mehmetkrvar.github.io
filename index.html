@@ -3,119 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uzay Temalı Site</title>
+    <title>Evren Kadar Büyük Bir Soru...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+
     <style>
-        /* Arka plan Resmi */
-        body {
+        /* Temel Ayarlar */
+        :root {
+            --star-color: #FFFFFF;
+            --glow-color: rgba(0, 255, 255, 0.7); /* Cyan glow */
+            --nebula-color-1: rgba(100, 0, 200, 0.3); /* Morumsu */
+            --nebula-color-2: rgba(0, 100, 150, 0.3); /* Mavimsi */
+            --dark-space: #0a0a18;
+            --deep-space: #000005;
+            --button-yes-bg: #0a84ff; /* Daha canlı bir mavi */
+            --button-yes-hover: #005ecb;
+            --button-no-bg: #ff375f; /* Daha canlı bir pembe/kırmızı */
+            --button-no-hover: #d6003a;
+            --text-color: #E0E0E0;
+            --title-color: #FFFFFF;
+            --response-color: #ffcc00;
+        }
+
+        body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            background: url('https://example.com/space-background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Arial', sans-serif;
+            /* Seçilen font */
+            font-family: 'Orbitron', sans-serif;
+            background-color: var(--deep-space); /* En dip renk */
+            color: var(--text-color);
+            position: relative; /* Yıldız katmanları için */
         }
 
-        /* Sayfa Ortası Konumlandırma */
-        #message {
+        /* Arka Plan Katmanları */
+        .background-layers {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 30px;
-            color: white;
-            text-align: center;
-            display: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* İçeriğin arkasında */
         }
 
-        /* Gezegenler için Temel Stil */
-        .planet {
+        /* Nebula Efekti (Subtle) */
+        .nebula {
+            width: 100%;
+            height: 100%;
             position: absolute;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #4b7b9f;
-            animation: movePlanet 10s linear infinite;
+            background: radial-gradient(ellipse at 70% 30%, var(--nebula-color-1) 0%, transparent 50%),
+                        radial-gradient(ellipse at 30% 70%, var(--nebula-color-2) 0%, transparent 50%);
+            opacity: 0.6;
+            animation: slow-drift 120s linear infinite alternate;
         }
 
-        .planet2 {
-            background-color: #c07c61;
+        @keyframes slow-drift {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(15deg) scale(1.1); }
         }
 
-        /* Gezegen hareketi için animasyon */
-        @keyframes movePlanet {
+
+        /* Yıldız Katmanları (CSS ile oluşturuldu) */
+        .stars, .stars2, .stars3 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Farklı boyut ve yoğunlukta yıldızlar için rastgele `radial-gradient` */
+        .stars { /* En küçük ve en yoğun */
+            background: transparent; /* Arka plan transparan olmalı */
+            /* Çok sayıda küçük yıldız (nokta) */
+            --star-size: 1px;
+            --star-count: 150; /* Sayıyı artırıp azaltabilirsiniz */
+            background-image: radial-gradient(var(--star-size) var(--star-size) at 10% 20%, var(--star-color), transparent),
+                              radial-gradient(var(--star-size) var(--star-size) at 80% 30%, var(--star-color), transparent),
+                              radial-gradient(var(--star-size) var(--star-size) at 30% 85%, var(--star-color), transparent),
+                              radial-gradient(var(--star-size) var(--star-size) at 50% 50%, var(--star-color), transparent),
+                              /* ... (daha fazla yıldız eklenebilir veya JS ile üretilebilir) ... */
+                              radial-gradient(var(--star-size) var(--star-size) at 90% 90%, var(--star-color), transparent);
+             background-size: 100% 100%; /* Gradyanları tüm alana yay */
+             background-position: 0 0; /* Başlangıç pozisyonu */
+             animation: twinkle 10s linear infinite alternate, move-stars 200s linear infinite;
+        }
+
+        .stars2 { /* Orta boyut, daha az yoğun */
+             background: transparent;
+             --star-size: 2px;
+             background-image: radial-gradient(var(--star-size) var(--star-size) at 25% 55%, var(--star-color), transparent),
+                               radial-gradient(var(--star-size) var(--star-size) at 75% 15%, var(--star-color), transparent),
+                               radial-gradient(var(--star-size) var(--star-size) at 45% 75%, var(--star-color), transparent);
+             background-size: 100% 100%;
+             background-position: 0 0;
+             opacity: 0.8;
+             animation: twinkle 12s linear infinite alternate, move-stars 150s linear infinite; /* Daha yavaş hareket */
+        }
+
+         .stars3 { /* Büyük, en az yoğun */
+             background: transparent;
+             --star-size: 3px;
+             background-image: radial-gradient(var(--star-size) var(--star-size) at 15% 80%, var(--star-color), transparent),
+                               radial-gradient(var(--star-size) var(--star-size) at 85% 40%, var(--star-color), transparent);
+             background-size: 100% 100%;
+             background-position: 0 0;
+             opacity: 0.6;
+             animation: twinkle 15s linear infinite alternate, move-stars 100s linear infinite; /* En yavaş hareket */
+        }
+
+
+        @keyframes move-stars {
+            from { background-position: 0 0; }
+            to { background-position: -10000px 5000px; } /* Uzun mesafe */
+        }
+
+        @keyframes twinkle {
+             0%, 100% { opacity: 0.6; }
+             50% { opacity: 1; }
+        }
+
+        /* Kayan Yıldızlar */
+        .shooting-stars-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Kapsayıcı dışına taşmasın */
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 2px; /* Kuyruk kalınlığı */
+            height: 80px; /* Kuyruk uzunluğu */
+            background: linear-gradient(to top, transparent 0%, var(--glow-color) 100%);
+            border-radius: 50%; /* Ucu hafif yuvarlak */
+            filter: drop-shadow(0 0 6px var(--glow-color));
+            animation: shoot 3s linear infinite;
+        }
+
+        /* Farklı konumlardan ve gecikmelerle başlatma */
+        .shooting-star:nth-child(1) { top: 10%; left: -10%; animation-delay: 1s; animation-duration: 2.5s; transform: rotate(-45deg); }
+        .shooting-star:nth-child(2) { top: 30%; left: -10%; animation-delay: 3s; animation-duration: 3s; transform: rotate(-55deg); }
+        .shooting-star:nth-child(3) { top: 60%; left: -10%; animation-delay: 5.5s; animation-duration: 2s; transform: rotate(-40deg); }
+        .shooting-star:nth-child(4) { top: 80%; left: -10%; animation-delay: 8s; animation-duration: 3.5s; transform: rotate(-50deg); }
+        /* Daha fazla ekleyebilirsiniz */
+
+
+        @keyframes shoot {
             0% {
-                transform: translateX(0) translateY(0);
-            }
-            50% {
-                transform: translateX(500px) translateY(200px);
-            }
-            100% {
-                transform: translateX(0) translateY(0);
-            }
-        }
-
-        /* Çarpışma animasyonu */
-        @keyframes explode {
-            0% {
-                transform: scale(1);
+                transform: translate(0, 0) rotate(-45deg); /* Başlangıç dönüşünü koru */
                 opacity: 1;
             }
-            50% {
-                transform: scale(2);
-                opacity: 0.5;
+            80% {
+                 opacity: 1;
             }
             100% {
-                transform: scale(0);
+                 /* Ekranın dışına çıkacak kadar uzağa gönder */
+                transform: translate(120vw, 120vh) rotate(-45deg);
                 opacity: 0;
             }
         }
+
+
+        /* İçerik Alanı */
+        .content-wrapper {
+             display: flex;
+             flex-direction: column;
+             justify-content: center;
+             align-items: center;
+             height: 100%; /* Tüm yüksekliği kapla */
+             padding: 20px;
+             z-index: 1; /* Yıldızların üzerinde */
+             position: relative; /* İçerik kendi içinde referans olabilir */
+        }
+
+        h1 {
+            font-size: 3em; /* Daha büyük başlık */
+            margin-bottom: 50px;
+            color: var(--title-color);
+            text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); /* Parlama efekti */
+            animation: pulse 2s infinite alternate;
+        }
+
+         @keyframes pulse {
+             from { transform: scale(1); text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); }
+             to   { transform: scale(1.03); text-shadow: 0 0 15px var(--glow-color), 0 0 30px var(--glow-color); }
+         }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px; /* Boşluğu biraz artır */
+            margin-top: 20px;
+            width: auto; /* Genişlik otomatik */
+        }
+
+        button {
+            padding: 15px 35px; /* Daha büyük butonlar */
+            font-size: 1.4em; /* Daha büyük font */
+            font-family: 'Orbitron', sans-serif; /* Fontu uygula */
+            cursor: pointer;
+            border: 2px solid var(--glow-color); /* Parlayan çerçeve */
+            border-radius: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            color: var(--title-color);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+             min-width: 150px;
+        }
+
+        #yes-button {
+            background-color: var(--button-yes-bg);
+            box-shadow: 0 0 10px var(--button-yes-bg), inset 0 0 5px rgba(255,255,255,0.3);
+            order: 1;
+        }
+
+        #yes-button:hover {
+            background-color: var(--button-yes-hover);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--button-yes-bg), 0 0 25px var(--glow-color), inset 0 0 8px rgba(255,255,255,0.4);
+        }
+
+        #no-button {
+            background-color: var(--button-no-bg);
+            box-shadow: 0 0 10px var(--button-no-bg), inset 0 0 5px rgba(255,255,255,0.3);
+            order: 2;
+            position: static; /* JS ile absolute'a çevrilecek */
+            transition: top 0.3s ease-out, left 0.3s ease-out, background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+         #no-button.moving {
+             position: absolute;
+             z-index: 10; /* Diğer her şeyin üzerinde olsun */
+             box-shadow: 0 0 15px var(--button-no-bg), 0 0 25px var(--glow-color);
+         }
+
+         #no-button:hover:not(.moving) { /* Sadece sabitken hover efekti */
+             background-color: var(--button-no-hover);
+             transform: scale(1.05);
+             box-shadow: 0 0 15px var(--button-no-bg), 0 0 25px var(--glow-color), inset 0 0 8px rgba(255,255,255,0.4);
+         }
+
+        #response {
+            margin-top: 60px;
+            font-size: 2em; /* Daha büyük yanıt */
+            color: var(--response-color);
+            display: none;
+            text-shadow: 0 0 8px var(--response-color), 0 0 15px var(--response-color);
+             z-index: 5; /* Butonlardan biraz altta ama arka planın üstünde */
+        }
+
+        /* Mobil Uyum */
+        @media (max-width: 768px) {
+             h1 { font-size: 2.2em; margin-bottom: 40px; }
+             button { font-size: 1.1em; padding: 12px 25px; min-width: 120px; }
+             .buttons { gap: 20px; }
+             #response { font-size: 1.6em; margin-top: 40px; }
+             .shooting-star { height: 60px; } /* Mobil için biraz daha kısa */
+        }
+         @media (max-width: 480px) {
+             h1 { font-size: 1.8em; margin-bottom: 30px; }
+             button { font-size: 1em; padding: 10px 20px; min-width: 100px; }
+         }
+
     </style>
 </head>
 <body>
 
-    <!-- Gezegen 1 -->
-    <div class="planet" id="planet1"></div>
-    <!-- Gezegen 2 -->
-    <div class="planet planet2" id="planet2"></div>
+    <div class="background-layers">
+        <div class="nebula"></div>
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+        <div class="shooting-stars-container">
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+        </div>
+    </div>
 
-    <!-- Mesaj -->
-    <div id="message">Bazen çok da kasmamak gerekir.</div>
+    <div class="content-wrapper">
+        <h1>Beni seviyor musun? <span style="font-size: 0.8em;">🌌</span></h1> <div class="buttons">
+            <button id="yes-button">Evet <span style="font-size: 0.8em;">✨</span></button>
+            <button id="no-button">Hayır <span style="font-size: 0.8em;">💔</span></button>
+        </div>
+        <p id="response">Ben de seni çok seviyorum! <span style="font-size: 0.8em;">💖🚀🪐</span></p> </div>
 
     <script>
-        // Gezegenler ve hareket fonksiyonları
-        let planet1 = document.getElementById('planet1');
-        let planet2 = document.getElementById('planet2');
-        let message = document.getElementById('message');
+        // JavaScript kodu öncekiyle aynı kalabilir,
+        // sadece CSS sınıfı ekleme/çıkarma mantığına dayanıyor.
 
-        // Gezegenlerin başlangıç konumları
-        let planet1Pos = { x: 0, y: 0 };
-        let planet2Pos = { x: 600, y: 300 };
+        const yesButton = document.getElementById('yes-button');
+        const noButton = document.getElementById('no-button');
+        const response = document.getElementById('response');
+        let noButtonInitialRect = null;
 
-        // Yörüngede hareket etmeleri için fonksiyon
-        function movePlanets() {
-            planet1.style.left = planet1Pos.x + 'px';
-            planet1.style.top = planet1Pos.y + 'px';
+        window.addEventListener('DOMContentLoaded', () => {
+             noButtonInitialRect = noButton.getBoundingClientRect();
+        });
 
-            planet2.style.left = planet2Pos.x + 'px';
-            planet2.style.top = planet2Pos.y + 'px';
+        yesButton.addEventListener('click', () => {
+            response.style.display = 'block';
+            yesButton.disabled = true;
+            noButton.disabled = true;
+             // Hayır butonunun hareketini durdur ve stilini ayarla
+            noButton.classList.remove('moving');
+            noButton.style.position = 'static'; // Veya başlangıçtaki yerine geri koy
+            noButton.style.opacity = 0.5;
+             // İsteğe bağlı: Hayır butonunu Evet'in altına geri taşıyabiliriz
+             // Ama devre dışı bırakmak yeterli olabilir.
+        });
 
-            planet1Pos.x += 2;
-            planet1Pos.y += 1;
-            planet2Pos.x -= 2;
-            planet2Pos.y -= 1;
+        noButton.addEventListener('click', handleNoClick);
+        // Fare üzerine gelince kaçması için:
+        // noButton.addEventListener('mouseover', handleNoHover);
 
-            // Çarpışma kontrolü
-            if (Math.abs(planet1Pos.x - planet2Pos.x) < 50 && Math.abs(planet1Pos.y - planet2Pos.y) < 50) {
-                planet1.style.animation = 'explode 1s forwards';
-                planet2.style.animation = 'explode 1s forwards';
-                setTimeout(function() {
-                    message.style.display = 'block';
-                }, 1000);
+        function handleNoClick() {
+             // Sadece oyun devam ederken çalışsın
+             if (yesButton.disabled) return;
+
+            // Eğer ilk tıklamaysa
+            if (!noButton.classList.contains('moving') && noButtonInitialRect) {
+                // Absolute yap ve başlangıç konumuna taşı
+                noButton.style.left = `${noButtonInitialRect.left}px`;
+                noButton.style.top = `${noButtonInitialRect.top}px`;
+                noButton.classList.add('moving'); // CSS'de position: absolute aktifleşir
+
+                // Kısa bir gecikme sonrası ilk hareketi yap
+                setTimeout(moveButton, 50);
+            } else if (noButton.classList.contains('moving')) {
+                 // Zaten hareket ediyorsa sadece yeni konuma taşı
+                 moveButton();
             }
         }
 
-        // Gezegenleri hareket ettir
-        setInterval(movePlanets, 20);
+        // Fare üzerine gelince tetiklenecek fonksiyon (isteğe bağlı)
+        // function handleNoHover() {
+        //     if (yesButton.disabled) return;
+        //     // Tıklama ile aynı mantığı kullanabiliriz
+        //     if (!noButton.classList.contains('moving') && noButtonInitialRect) {
+        //         noButton.style.left = `${noButtonInitialRect.left}px`;
+        //         noButton.style.top = `${noButtonInitialRect.top}px`;
+        //         noButton.classList.add('moving');
+        //         setTimeout(moveButton, 50);
+        //     } else if (noButton.classList.contains('moving')) {
+        //          moveButton();
+        //     }
+        // }
+
+
+        function moveButton() {
+             if (!noButton.classList.contains('moving') || yesButton.disabled) return;
+
+            const buttonRect = noButton.getBoundingClientRect();
+            const bodyRect = document.body.getBoundingClientRect();
+            const padding = 15; // Kenarlara daha fazla boşluk bırakalım
+
+            const maxX = bodyRect.width - buttonRect.width - padding;
+            const maxY = bodyRect.height - buttonRect.height - padding;
+            const minX = padding;
+            const minY = padding;
+
+             let randomX = Math.max(minX, Math.random() * (maxX - minX) + minX);
+             let randomY = Math.max(minY, Math.random() * (maxY - minY) + minY);
+
+            noButton.style.left = `${randomX}px`;
+            noButton.style.top = `${randomY}px`;
+        }
+
     </script>
 
 </body>
