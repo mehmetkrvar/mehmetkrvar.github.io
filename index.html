@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aşk Kıvılcımları - Evrensel Mobil+</title>
+    <title>Aşk Kıvılcımları - Evrensel Mobil++</title>
     <style>
         :root {
             /* Temel Renkler */
@@ -138,19 +138,19 @@
         /* --- Mobil Cihaz Ayarlamaları --- */
         @media (max-width: 768px) {
             :root {
-                /* Mobil için mesaj font boyutunu artır */
-                --message-font-size: clamp(1.2em, 3.8vw, 1.7em); /* Min, Tercih edilen, Max değerleri artırıldı */
+                /* Mobil için mesaj font boyutunu DAHA DA artır */
+                 --message-font-size: clamp(1.4em, 4.5vw, 1.9em); /* Min, Tercih edilen, Max değerleri DAHA DA artırıldı */
             }
 
             #instructions {
-                 font-size: 0.85em; /* Talimat metni mobil için biraz daha okunaklı */
+                 font-size: 0.85em;
                  top: 25px;
-                 max-width: 80%; /* Çok uzunsa sığsın */
+                 max-width: 80%;
             }
 
              #message-display {
-                 bottom: 4%; /* Mesaj alanını biraz daha yukarı al */
-                 height: 6em; /* Biraz daha yükseklik */
+                 bottom: 4%;
+                 height: 6em;
              }
 
              /* Not: Yıldız boyutu doğrudan JS içinde ayarlanacak */
@@ -180,20 +180,20 @@
         // Durum Değişkenleri
         let starCount = 0;
         let instructionVisible = true;
-        let numParticles = window.innerWidth < 768 ? 15 : 25; // Mobil için daha az parçacık
-        let currentMessageElement = null; // Şu an ekranda olan mesaj
-        const atmosphereChangeThreshold = 7; // Kaç yıldızdan sonra atmosfer değişsin
-        const numBgShootingStars = 10; // Arka planda aynı anda kaç kayan yıldız olsun
-
-        // Romantik Mesajlar
+        let numParticles = window.innerWidth < 768 ? 15 : 25;
+        let currentMessageElement = null;
+        const atmosphereChangeThreshold = 7;
+        const numBgShootingStars = 20; // Arka plan yıldız sayısı artırıldı
+        // --- Romantik Mesajlar (Değişiklik yok) ---
         const romanticPhrases = [
-            "Bir dokunuş... ve bir evren uyandı.", "Karanlıkta parlayan ilk ışık sensin.", "Yalnız atomlar dansa durdu.",
+             "Bir dokunuş... ve bir evren uyandı.", "Karanlıkta parlayan ilk ışık sensin.", "Yalnız atomlar dansa durdu.",
             "Yörüngelerimiz kesiştiğinde zaman durdu.", "İki ruh... şimdi tek bir takımada.", "Seninle her an, yeni bir galaksi keşfi.",
             "Aramızdaki çekim, tüm karadeliklerden güçlü.", "Bu bizim sonsuzluğumuzun başlangıcı.", "Yarattığımız ışık, evrene yolu gösteriyor.",
             "Ve aşkımız, kozmosun en güzel şarkısı oldu.", "Yıldızlar şahidimiz olsun bu sevdaya...",
             "Kalplerimiz aynı ritimde atıyor, nebula gibi.", "Seninle kaybolmak, asıl kendimi bulmak demek.",
             "Gözlerindeki ışıltı, en parlak süpernova.", "Birlikte yazdığımız bu destan hiç bitmesin."
         ];
+
 
         // --- Yardımcı Fonksiyonlar ---
         function random(min, max) { return Math.random() * (max - min) + min; }
@@ -216,16 +216,16 @@
             createClickRipple(clientX, clientY);
             createStardustEffect(clientX, clientY);
             setTimeout(() => createPermanentStar(clientX, clientY), 150);
-            triggerRomanticMessage(); // Mesajı tetikle
+            triggerRomanticMessage();
             starCount++;
 
              // Atmosfer Değişimi Kontrolü
              if (starCount === atmosphereChangeThreshold) {
-                 document.documentElement.style.setProperty('--bg-overlay-opacity', '0.3'); // Biraz daha görünür yap
-                 document.documentElement.style.setProperty('--bg-overlay-color', 'radial-gradient(ellipse at center, rgba(60, 20, 80, 0.4) 0%, transparent 75%)'); // Morumsu ton
+                 document.documentElement.style.setProperty('--bg-overlay-opacity', '0.3');
+                 document.documentElement.style.setProperty('--bg-overlay-color', 'radial-gradient(ellipse at center, rgba(60, 20, 80, 0.4) 0%, transparent 75%)');
              } else if (starCount === atmosphereChangeThreshold * 2) {
-                  document.documentElement.style.setProperty('--bg-overlay-opacity', '0.4'); // Daha da görünür
-                 document.documentElement.style.setProperty('--bg-overlay-color', 'radial-gradient(ellipse at center, rgba(20, 60, 80, 0.5) 0%, transparent 70%)'); // Mavimsi ton
+                  document.documentElement.style.setProperty('--bg-overlay-opacity', '0.4');
+                 document.documentElement.style.setProperty('--bg-overlay-color', 'radial-gradient(ellipse at center, rgba(20, 60, 80, 0.5) 0%, transparent 70%)');
              }
         }
         spaceCanvas.addEventListener('click', handleInteraction);
@@ -233,8 +233,7 @@
 
         // --- Efekt Oluşturma Fonksiyonları ---
         function createClickRipple(x, y) { /* Değişiklik yok */
-            const ripple = document.createElement('div');
-            ripple.classList.add('click-ripple');
+            const ripple = document.createElement('div'); ripple.classList.add('click-ripple');
             ripple.style.left = `${x}px`; ripple.style.top = `${y}px`;
             spaceCanvas.appendChild(ripple);
             ripple.addEventListener('animationend', () => ripple.remove());
@@ -244,8 +243,7 @@
              const spreadRadius = window.innerWidth < 768 ? 40 : 60;
              const animationDuration = 800;
              for (let i = 0; i < numParticles; i++) {
-                const dust = document.createElement('div');
-                dust.classList.add('stardust');
+                const dust = document.createElement('div'); dust.classList.add('stardust');
                 const angle = random(0, Math.PI * 2); const radius = random(spreadRadius * 0.2, spreadRadius);
                 const startX = x + Math.cos(angle) * radius; const startY = y + Math.sin(angle) * radius;
                 dust.style.left = `${startX}px`; dust.style.top = `${startY}px`;
@@ -254,23 +252,22 @@
                 dust.style.backgroundColor = dustColor; dust.style.boxShadow = `0 0 ${random(3, 6)}px ${random(1, 2)}px ${dustColor}`;
                 spaceCanvas.appendChild(dust);
                 const animation = dust.animate([
-                    { transform: `translate(0, 0) scale(1)`, opacity: 1, offset: 0 },
-                    { transform: `translate(${x - startX}px, ${y - startY}px) scale(0.7)`, opacity: 0.9, offset: 0.7 },
+                    { transform: `translate(0, 0) scale(1)`, opacity: 1, offset: 0 }, { transform: `translate(${x - startX}px, ${y - startY}px) scale(0.7)`, opacity: 0.9, offset: 0.7 },
                     { transform: `translate(${x - startX}px, ${y - startY}px) scale(0.1)`, opacity: 0, offset: 1 }
                 ], { duration: animationDuration + random(-150, 150), easing: 'cubic-bezier(0.7, 0, 0.8, 0.6)', fill: 'forwards' });
                 animation.onfinish = () => dust.remove();
             }
         }
 
-        // Kalıcı Yıldızı Oluşturur (Mobil Boyut Ayarıyla)
+        // Kalıcı Yıldızı Oluşturur (Mobil Boyut DAHA BÜYÜK)
         function createPermanentStar(x, y) {
             const star = document.createElement('div');
             star.classList.add('formed-star');
             star.style.left = `${x}px`; star.style.top = `${y}px`;
 
-            // *** MOBİL BOYUT AYARI BURADA ***
+            // *** MOBİL BOYUT DAHA DA BÜYÜK ***
             const isMobile = window.innerWidth < 768;
-            const coreSize = isMobile ? random(6, 10) : random(4, 8); // Mobil: 6-10px, Desktop: 4-8px
+            const coreSize = isMobile ? random(8, 13) : random(4, 8); // Mobil: 8-13px, Desktop: 4-8px
             // *** Ayar Sonu ***
 
             star.style.width = `${coreSize}px`; star.style.height = `${coreSize}px`;
@@ -282,34 +279,29 @@
             spaceCanvas.appendChild(star);
         }
 
+
         // --- Arka Plan Kayan Yıldızları Oluşturma ve Yönetme ---
         function createBackgroundShootingStar() { /* Değişiklik yok */
-            const star = document.createElement('div');
-            star.classList.add('bg-shooting-star');
-            const startSide = randomInt(0, 3);
-            let startXPercent, startYPercent, angle;
-            const duration = random(4, 9); // Hız ayarı
+            const star = document.createElement('div'); star.classList.add('bg-shooting-star');
+            const startSide = randomInt(0, 3); let startXPercent, startYPercent, angle; const duration = random(4, 9);
              switch (startSide) {
                 case 0: startXPercent = random(0, 100); startYPercent = -5; angle = random(120, 160); break;
                 case 1: startXPercent = -5; startYPercent = random(0, 100); angle = random(30, 70); break;
                 case 2: startXPercent = 105; startYPercent = random(0, 100); angle = random(210, 250); break;
                 case 3: default:
-                     if (Math.random() > 0.85) { // Daha nadir alttan
-                         startXPercent = random(0, 100); startYPercent = 105; angle = random(300, 340);
-                     } else { startXPercent = random(0, 100); startYPercent = -5; angle = random(120, 160); }
-                     break;
+                     if (Math.random() > 0.85) { startXPercent = random(0, 100); startYPercent = 105; angle = random(300, 340); }
+                     else { startXPercent = random(0, 100); startYPercent = -5; angle = random(120, 160); } break;
             }
             star.style.left = `${startXPercent}%`; star.style.top = `${startYPercent}%`; star.style.transform = `rotate(${angle}deg)`;
             bgStarsContainer.appendChild(star);
              const distance = Math.max(window.innerWidth, window.innerHeight) * 1.5;
-             const moveX = Math.cos((angle - 90) * Math.PI / 180) * distance;
-             const moveY = Math.sin((angle - 90) * Math.PI / 180) * distance;
+             const moveX = Math.cos((angle - 90) * Math.PI / 180) * distance; const moveY = Math.sin((angle - 90) * Math.PI / 180) * distance;
             const animation = star.animate([
                 { transform: `rotate(${angle}deg) translate(0, 0) scaleY(0.5)`, opacity: 0 },
-                { transform: `rotate(${angle}deg) translate(${moveX * 0.05}px, ${moveY * 0.05}px) scaleY(1)`, opacity: random(0.4, 0.8), offset: 0.1 }, // Opaklık da rastgele
+                { transform: `rotate(${angle}deg) translate(${moveX * 0.05}px, ${moveY * 0.05}px) scaleY(1)`, opacity: random(0.4, 0.8), offset: 0.1 },
                 { transform: `rotate(${angle}deg) translate(${moveX}px, ${moveY}px) scaleY(1)`, opacity: 0, offset: 1 }
             ], { duration: duration * 1000, easing: 'linear', delay: random(0, 5000) });
-            animation.onfinish = () => { star.remove(); setTimeout(createBackgroundShootingStar, random(2000, 6000)); }; // Biraz daha uzun aralık
+            animation.onfinish = () => { star.remove(); setTimeout(createBackgroundShootingStar, random(1500, 4000)); }; // Biraz daha sık tetikle (daha çok yıldız için)
         }
 
         // --- Mesaj Yönetimi (Sıralı Gösterim) ---
@@ -320,25 +312,18 @@
             else { return; }
 
             if (currentMessageElement) {
-                const oldMsg = currentMessageElement;
-                oldMsg.classList.remove('phrase-fade-in'); oldMsg.classList.add('phrase-fade-out');
-                oldMsg.addEventListener('animationend', () => {
-                    if (oldMsg.parentNode === messageDisplay) { messageDisplay.removeChild(oldMsg); }
-                }, { once: true });
+                const oldMsg = currentMessageElement; oldMsg.classList.remove('phrase-fade-in'); oldMsg.classList.add('phrase-fade-out');
+                oldMsg.addEventListener('animationend', () => { if (oldMsg.parentNode === messageDisplay) { messageDisplay.removeChild(oldMsg); } }, { once: true });
             }
-
-            const newPhraseElement = document.createElement('p');
-            newPhraseElement.classList.add('romantic-phrase');
+            const newPhraseElement = document.createElement('p'); newPhraseElement.classList.add('romantic-phrase');
             if (isFinal) { newPhraseElement.classList.add('final-phrase'); }
-            newPhraseElement.textContent = phraseText;
-            messageDisplay.appendChild(newPhraseElement);
-            newPhraseElement.classList.add('phrase-fade-in');
-            currentMessageElement = newPhraseElement;
+            newPhraseElement.textContent = phraseText; messageDisplay.appendChild(newPhraseElement);
+            newPhraseElement.classList.add('phrase-fade-in'); currentMessageElement = newPhraseElement;
         }
 
         // --- Başlatma Fonksiyonları ---
         function initCosmos() {
-            for (let i = 0; i < numBgShootingStars; i++) {
+            for (let i = 0; i < numBgShootingStars; i++) { // Artırılmış sayıyla döngü
                  setTimeout(createBackgroundShootingStar, random(0, 4000));
             }
         }
