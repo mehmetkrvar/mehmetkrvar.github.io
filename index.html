@@ -3,382 +3,410 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evren Kadar Büyük Bir Soru...</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
-
+    <title>Aşk Kıvılcımları - Evrensel</title>
     <style>
-        /* Temel Ayarlar */
         :root {
-            --star-color: #FFFFFF;
-            --glow-color: rgba(0, 255, 255, 0.7); /* Cyan glow */
-            --nebula-color-1: rgba(100, 0, 200, 0.3); /* Morumsu */
-            --nebula-color-2: rgba(0, 100, 150, 0.3); /* Mavimsi */
-            --dark-space: #0a0a18;
-            --deep-space: #000005;
-            --button-yes-bg: #0a84ff; /* Daha canlı bir mavi */
-            --button-yes-hover: #005ecb;
-            --button-no-bg: #ff375f; /* Daha canlı bir pembe/kırmızı */
-            --button-no-hover: #d6003a;
-            --text-color: #E0E0E0;
-            --title-color: #FFFFFF;
-            --response-color: #ffcc00;
+            /* Temel Renkler */
+            --bg-color: #02000f;
+            --dust-color-1: #ffffff;
+            --dust-color-2: #fff0c1;
+            --star-glow-base: rgba(255, 235, 190, 0.7);
+            --star-core-base: #fff8e1;
+            --text-color: #e8eaf6;
+            --instruction-color: rgba(200, 220, 255, 0.6);
+            --ripple-color: rgba(255, 255, 255, 0.5);
+            --bg-star-color: rgba(255, 255, 255, 0.7);
+
+            /* Duyarlı Font Boyutları */
+            --base-font-size: clamp(10px, 1.8vw, 16px);
+            --message-font-size: clamp(1.1em, 2.8vw, 1.5em); /* Mesajlar biraz daha büyük */
+
+             /* Atmosfer Değişimi İçin */
+            --bg-overlay-opacity: 0; /* Başlangıçta görünmez */
+            --bg-overlay-color: radial-gradient(ellipse at center, rgba(40, 10, 60, 0.3) 0%, transparent 70%);
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
             height: 100%;
             overflow: hidden;
-            /* Seçilen font */
-            font-family: 'Orbitron', sans-serif;
-            background-color: var(--deep-space); /* En dip renk */
-            color: var(--text-color);
-            position: relative; /* Yıldız katmanları için */
+            background-color: var(--bg-color);
+            font-family: 'Georgia', 'Times New Roman', Times, serif;
+            font-size: var(--base-font-size);
         }
 
-        /* Arka Plan Katmanları */
-        .background-layers {
-            position: absolute;
-            top: 0;
-            left: 0;
+        #space-canvas {
+            position: relative;
             width: 100%;
             height: 100%;
-            z-index: -1; /* İçeriğin arkasında */
+            cursor: crosshair;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: 0 0;
+            animation: moveBackground 240s linear infinite; /* Daha da yavaş */
+            z-index: 1;
         }
-
-        /* Nebula Efekti (Subtle) */
-        .nebula {
-            width: 100%;
-            height: 100%;
+        /* Atmosfer değişim katmanı */
+        #space-canvas::after {
+            content: '';
             position: absolute;
-            background: radial-gradient(ellipse at 70% 30%, var(--nebula-color-1) 0%, transparent 50%),
-                        radial-gradient(ellipse at 30% 70%, var(--nebula-color-2) 0%, transparent 50%);
-            opacity: 0.6;
-            animation: slow-drift 120s linear infinite alternate;
-        }
-
-        @keyframes slow-drift {
-            0% { transform: rotate(0deg) scale(1); }
-            100% { transform: rotate(15deg) scale(1.1); }
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-overlay-color);
+            opacity: var(--bg-overlay-opacity);
+            transition: opacity 5s ease-in-out; /* Yumuşak geçiş */
+            pointer-events: none;
+            z-index: 2; /* Arka plan yıldızlarının önünde, ana içeriğin arkasında */
         }
 
 
-        /* Yıldız Katmanları (CSS ile oluşturuldu) */
-        .stars, .stars2, .stars3 {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* Farklı boyut ve yoğunlukta yıldızlar için rastgele `radial-gradient` */
-        .stars { /* En küçük ve en yoğun */
-            background: transparent; /* Arka plan transparan olmalı */
-            /* Çok sayıda küçük yıldız (nokta) */
-            --star-size: 1px;
-            --star-count: 150; /* Sayıyı artırıp azaltabilirsiniz */
-            background-image: radial-gradient(var(--star-size) var(--star-size) at 10% 20%, var(--star-color), transparent),
-                              radial-gradient(var(--star-size) var(--star-size) at 80% 30%, var(--star-color), transparent),
-                              radial-gradient(var(--star-size) var(--star-size) at 30% 85%, var(--star-color), transparent),
-                              radial-gradient(var(--star-size) var(--star-size) at 50% 50%, var(--star-color), transparent),
-                              /* ... (daha fazla yıldız eklenebilir veya JS ile üretilebilir) ... */
-                              radial-gradient(var(--star-size) var(--star-size) at 90% 90%, var(--star-color), transparent);
-             background-size: 100% 100%; /* Gradyanları tüm alana yay */
-             background-position: 0 0; /* Başlangıç pozisyonu */
-             animation: twinkle 10s linear infinite alternate, move-stars 200s linear infinite;
-        }
-
-        .stars2 { /* Orta boyut, daha az yoğun */
-             background: transparent;
-             --star-size: 2px;
-             background-image: radial-gradient(var(--star-size) var(--star-size) at 25% 55%, var(--star-color), transparent),
-                               radial-gradient(var(--star-size) var(--star-size) at 75% 15%, var(--star-color), transparent),
-                               radial-gradient(var(--star-size) var(--star-size) at 45% 75%, var(--star-color), transparent);
-             background-size: 100% 100%;
-             background-position: 0 0;
-             opacity: 0.8;
-             animation: twinkle 12s linear infinite alternate, move-stars 150s linear infinite; /* Daha yavaş hareket */
-        }
-
-         .stars3 { /* Büyük, en az yoğun */
-             background: transparent;
-             --star-size: 3px;
-             background-image: radial-gradient(var(--star-size) var(--star-size) at 15% 80%, var(--star-color), transparent),
-                               radial-gradient(var(--star-size) var(--star-size) at 85% 40%, var(--star-color), transparent);
-             background-size: 100% 100%;
-             background-position: 0 0;
-             opacity: 0.6;
-             animation: twinkle 15s linear infinite alternate, move-stars 100s linear infinite; /* En yavaş hareket */
-        }
-
-
-        @keyframes move-stars {
+        @keyframes moveBackground {
             from { background-position: 0 0; }
-            to { background-position: -10000px 5000px; } /* Uzun mesafe */
+            to { background-position: 1200px 1200px; }
         }
 
-        @keyframes twinkle {
-             0%, 100% { opacity: 0.6; }
-             50% { opacity: 1; }
-        }
-
-        /* Kayan Yıldızlar */
-        .shooting-stars-container {
+        /* Arka Plan Kayan Yıldız Konteyneri */
+        #bg-shooting-stars {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden; /* Kapsayıcı dışına taşmasın */
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            overflow: hidden; /* Konteyner dışına taşmasınlar */
+            z-index: 0; /* En arkada */
         }
 
-        .shooting-star {
+        .bg-shooting-star {
             position: absolute;
-            width: 2px; /* Kuyruk kalınlığı */
-            height: 80px; /* Kuyruk uzunluğu */
-            background: linear-gradient(to top, transparent 0%, var(--glow-color) 100%);
-            border-radius: 50%; /* Ucu hafif yuvarlak */
-            filter: drop-shadow(0 0 6px var(--glow-color));
-            animation: shoot 3s linear infinite;
+            width: 1px; /* Çok ince */
+            height: 50px; /* Kısa kuyruk */
+            background: linear-gradient(to bottom, var(--bg-star-color) 0%, transparent 100%);
+            filter: blur(0.5px); /* Hafif bulanık */
+            /* Animasyon JS ile atanacak */
+            opacity: 0; /* Başlangıçta gizli */
+            transform-origin: top center;
         }
 
-        /* Farklı konumlardan ve gecikmelerle başlatma */
-        .shooting-star:nth-child(1) { top: 10%; left: -10%; animation-delay: 1s; animation-duration: 2.5s; transform: rotate(-45deg); }
-        .shooting-star:nth-child(2) { top: 30%; left: -10%; animation-delay: 3s; animation-duration: 3s; transform: rotate(-55deg); }
-        .shooting-star:nth-child(3) { top: 60%; left: -10%; animation-delay: 5.5s; animation-duration: 2s; transform: rotate(-40deg); }
-        .shooting-star:nth-child(4) { top: 80%; left: -10%; animation-delay: 8s; animation-duration: 3.5s; transform: rotate(-50deg); }
-        /* Daha fazla ekleyebilirsiniz */
-
-
-        @keyframes shoot {
-            0% {
-                transform: translate(0, 0) rotate(-45deg); /* Başlangıç dönüşünü koru */
-                opacity: 1;
-            }
-            80% {
-                 opacity: 1;
-            }
-            100% {
-                 /* Ekranın dışına çıkacak kadar uzağa gönder */
-                transform: translate(120vw, 120vh) rotate(-45deg);
-                opacity: 0;
-            }
+        #instructions {
+            position: absolute; top: 30px; left: 50%;
+            transform: translateX(-50%); color: var(--instruction-color);
+            font-size: 0.9em; font-style: italic; pointer-events: none;
+            opacity: 1; transition: opacity 1s ease-out 3s; z-index: 30;
         }
 
-
-        /* İçerik Alanı */
-        .content-wrapper {
-             display: flex;
-             flex-direction: column;
-             justify-content: center;
-             align-items: center;
-             height: 100%; /* Tüm yüksekliği kapla */
-             padding: 20px;
-             z-index: 1; /* Yıldızların üzerinde */
-             position: relative; /* İçerik kendi içinde referans olabilir */
+        .click-ripple {
+            position: absolute; width: 20px; height: 20px;
+            border: 2px solid var(--ripple-color); border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0); opacity: 1;
+            pointer-events: none; animation: rippleEffect 0.6s ease-out forwards;
+            z-index: 10;
+        }
+        @keyframes rippleEffect { /* Aynı kaldı */
+            from { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            to { transform: translate(-50%, -50%) scale(3); opacity: 0; }
         }
 
-        h1 {
-            font-size: 3em; /* Daha büyük başlık */
-            margin-bottom: 50px;
-            color: var(--title-color);
-            text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); /* Parlama efekti */
-            animation: pulse 2s infinite alternate;
+        .stardust {
+            position: absolute; width: 3px; height: 3px;
+            background-color: var(--dust-color-1); border-radius: 50%;
+            pointer-events: none; opacity: 0; z-index: 20;
         }
 
-         @keyframes pulse {
-             from { transform: scale(1); text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); }
-             to   { transform: scale(1.03); text-shadow: 0 0 15px var(--glow-color), 0 0 30px var(--glow-color); }
-         }
+        .formed-star {
+            position: absolute; border-radius: 50%; pointer-events: none;
+            transform: translate(-50%, -50%) scale(0); opacity: 0;
+            animation: appearStar 1s ease-out forwards 0.5s; z-index: 5;
+        }
+        @keyframes appearStar { /* Aynı kaldı */
+             0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            70% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 1; }
+        }
 
-        .buttons {
+        #message-display {
+            position: absolute;
+            bottom: 5%; /* Biraz yukarı */
+            left: 5%; right: 5%;
+            text-align: center;
+            z-index: 30;
+            pointer-events: none;
+            height: 5em; /* Yaklaşık 2 satır mesaja yer aç, sabit yükseklik */
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px; /* Boşluğu biraz artır */
-            margin-top: 20px;
-            width: auto; /* Genişlik otomatik */
+            justify-content: center;
+            align-items: center; /* Mesajı dikeyde ve yatayda ortala */
         }
 
-        button {
-            padding: 15px 35px; /* Daha büyük butonlar */
-            font-size: 1.4em; /* Daha büyük font */
-            font-family: 'Orbitron', sans-serif; /* Fontu uygula */
-            cursor: pointer;
-            border: 2px solid var(--glow-color); /* Parlayan çerçeve */
+        .romantic-phrase {
+            position: absolute; /* Sadece bir mesaj görüneceği için absolute olabilir */
+            color: var(--text-color);
+            font-size: var(--message-font-size);
+            text-shadow: 0 0 7px rgba(180, 200, 255, 0.8);
+            padding: 8px 15px;
+            background: linear-gradient(rgba(15, 25, 50, 0.2), rgba(15, 25, 50, 0.6), rgba(15, 25, 50, 0.2));
             border-radius: 10px;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            color: var(--title-color);
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-             min-width: 150px;
+            max-width: 90%;
+            word-wrap: break-word;
+            opacity: 0; /* Başlangıçta gizli */
+            transform: translateY(10px) scale(0.95); /* Hafif başlangıç durumu */
+            /* Animasyonlar JS tarafından kontrol edilecek veya class ile */
         }
 
-        #yes-button {
-            background-color: var(--button-yes-bg);
-            box-shadow: 0 0 10px var(--button-yes-bg), inset 0 0 5px rgba(255,255,255,0.3);
-            order: 1;
+        /* Mesaj Giriş/Çıkış Animasyonları */
+        .phrase-fade-in {
+            animation: fadeInPhrase 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        .phrase-fade-out {
+             animation: fadeOutPhrase 0.2s cubic-bezier(0.5, 0, 0.75, 0) forwards;
         }
 
-        #yes-button:hover {
-            background-color: var(--button-yes-hover);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px var(--button-yes-bg), 0 0 25px var(--glow-color), inset 0 0 8px rgba(255,255,255,0.4);
+        @keyframes fadeInPhrase {
+             from { opacity: 0; transform: translateY(10px) scale(0.95); }
+             to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes fadeOutPhrase {
+             from { opacity: 1; transform: translateY(0) scale(1); }
+             to { opacity: 0; transform: translateY(-10px) scale(0.95); }
         }
 
-        #no-button {
-            background-color: var(--button-no-bg);
-            box-shadow: 0 0 10px var(--button-no-bg), inset 0 0 5px rgba(255,255,255,0.3);
-            order: 2;
-            position: static; /* JS ile absolute'a çevrilecek */
-            transition: top 0.3s ease-out, left 0.3s ease-out, background-color 0.3s ease, box-shadow 0.3s ease;
+         /* Sonsuzluk mesajı için özel stil */
+        .final-phrase {
+             font-size: clamp(1.3em, 3.2vw, 1.8em); /* Biraz daha büyük */
+             font-weight: bold;
+             text-shadow: 0 0 12px rgba(255, 220, 180, 0.9); /* Daha sıcak parlama */
         }
-
-         #no-button.moving {
-             position: absolute;
-             z-index: 10; /* Diğer her şeyin üzerinde olsun */
-             box-shadow: 0 0 15px var(--button-no-bg), 0 0 25px var(--glow-color);
-         }
-
-         #no-button:hover:not(.moving) { /* Sadece sabitken hover efekti */
-             background-color: var(--button-no-hover);
-             transform: scale(1.05);
-             box-shadow: 0 0 15px var(--button-no-bg), 0 0 25px var(--glow-color), inset 0 0 8px rgba(255,255,255,0.4);
-         }
-
-        #response {
-            margin-top: 60px;
-            font-size: 2em; /* Daha büyük yanıt */
-            color: var(--response-color);
-            display: none;
-            text-shadow: 0 0 8px var(--response-color), 0 0 15px var(--response-color);
-             z-index: 5; /* Butonlardan biraz altta ama arka planın üstünde */
-        }
-
-        /* Mobil Uyum */
-        @media (max-width: 768px) {
-             h1 { font-size: 2.2em; margin-bottom: 40px; }
-             button { font-size: 1.1em; padding: 12px 25px; min-width: 120px; }
-             .buttons { gap: 20px; }
-             #response { font-size: 1.6em; margin-top: 40px; }
-             .shooting-star { height: 60px; } /* Mobil için biraz daha kısa */
-        }
-         @media (max-width: 480px) {
-             h1 { font-size: 1.8em; margin-bottom: 30px; }
-             button { font-size: 1em; padding: 10px 20px; min-width: 100px; }
-         }
 
     </style>
 </head>
 <body>
 
-    <div class="background-layers">
-        <div class="nebula"></div>
-        <div class="stars"></div>
-        <div class="stars2"></div>
-        <div class="stars3"></div>
-        <div class="shooting-stars-container">
-            <div class="shooting-star"></div>
-            <div class="shooting-star"></div>
-            <div class="shooting-star"></div>
-            <div class="shooting-star"></div>
+    <div id="bg-shooting-stars">
         </div>
-    </div>
 
-    <div class="content-wrapper">
-        <h1>Beni seviyor musun? <span style="font-size: 0.8em;">🌌</span></h1> <div class="buttons">
-            <button id="yes-button">Evet <span style="font-size: 0.8em;">✨</span></button>
-            <button id="no-button">Hayır <span style="font-size: 0.8em;">💔</span></button>
+    <div id="space-canvas">
+        <div id="instructions">Evreni aşkla doldurmak için dokun veya tıkla...</div>
         </div>
-        <p id="response">Ben de seni çok seviyorum! <span style="font-size: 0.8em;">💖🚀🪐</span></p> </div>
+
+    <div id="message-display">
+        </div>
 
     <script>
-        // JavaScript kodu öncekiyle aynı kalabilir,
-        // sadece CSS sınıfı ekleme/çıkarma mantığına dayanıyor.
+        // Element Referansları
+        const spaceCanvas = document.getElementById('space-canvas');
+        const instructions = document.getElementById('instructions');
+        const messageDisplay = document.getElementById('message-display');
+        const bgStarsContainer = document.getElementById('bg-shooting-stars');
 
-        const yesButton = document.getElementById('yes-button');
-        const noButton = document.getElementById('no-button');
-        const response = document.getElementById('response');
-        let noButtonInitialRect = null;
+        // Durum Değişkenleri
+        let starCount = 0;
+        let instructionVisible = true;
+        let numParticles = window.innerWidth < 768 ? 15 : 25;
+        let currentMessageElement = null; // Şu an ekranda olan mesaj
+        const atmosphereChangeThreshold = 7; // Kaç yıldızdan sonra atmosfer değişsin
+        const numBgShootingStars = 10; // Arka planda aynı anda kaç kayan yıldız olsun
 
-        window.addEventListener('DOMContentLoaded', () => {
-             noButtonInitialRect = noButton.getBoundingClientRect();
-        });
+        // Romantik Mesajlar (Aynı kaldı, isteğe bağlı değiştirilebilir)
+        const romanticPhrases = [
+            "Bir dokunuş... ve bir evren uyandı.", "Karanlıkta parlayan ilk ışık sensin.", "Yalnız atomlar dansa durdu.",
+            "Yörüngelerimiz kesiştiğinde zaman durdu.", "İki ruh... şimdi tek bir takımada.", "Seninle her an, yeni bir galaksi keşfi.",
+            "Aramızdaki çekim, tüm karadeliklerden güçlü.", "Bu bizim sonsuzluğumuzun başlangıcı.", "Yarattığımız ışık, evrene yolu gösteriyor.",
+            "Ve aşkımız, kozmosun en güzel şarkısı oldu.", "Yıldızlar şahidimiz olsun bu sevdaya...",
+            "Kalplerimiz aynı ritimde atıyor, nebula gibi.", "Seninle kaybolmak, asıl kendimi bulmak demek.",
+            "Gözlerindeki ışıltı, en parlak süpernova.", "Birlikte yazdığımız bu destan hiç bitmesin."
+        ];
 
-        yesButton.addEventListener('click', () => {
-            response.style.display = 'block';
-            yesButton.disabled = true;
-            noButton.disabled = true;
-             // Hayır butonunun hareketini durdur ve stilini ayarla
-            noButton.classList.remove('moving');
-            noButton.style.position = 'static'; // Veya başlangıçtaki yerine geri koy
-            noButton.style.opacity = 0.5;
-             // İsteğe bağlı: Hayır butonunu Evet'in altına geri taşıyabiliriz
-             // Ama devre dışı bırakmak yeterli olabilir.
-        });
+        // --- Yardımcı Fonksiyonlar ---
+        function random(min, max) { return Math.random() * (max - min) + min; }
+        function randomInt(min, max) { return Math.floor(random(min, max + 1)); }
 
-        noButton.addEventListener('click', handleNoClick);
-        // Fare üzerine gelince kaçması için:
-        // noButton.addEventListener('mouseover', handleNoHover);
+        // --- Olay Yönetimi ---
+        function handleInteraction(event) {
+            event.preventDefault();
+            let clientX, clientY;
+            if (event.touches) {
+                clientX = event.touches[0].clientX; clientY = event.touches[0].clientY;
+            } else {
+                clientX = event.clientX; clientY = event.clientY;
+            }
 
-        function handleNoClick() {
-             // Sadece oyun devam ederken çalışsın
-             if (yesButton.disabled) return;
+            if (instructionVisible) {
+                instructions.style.opacity = '0'; instructionVisible = false;
+            }
 
-            // Eğer ilk tıklamaysa
-            if (!noButton.classList.contains('moving') && noButtonInitialRect) {
-                // Absolute yap ve başlangıç konumuna taşı
-                noButton.style.left = `${noButtonInitialRect.left}px`;
-                noButton.style.top = `${noButtonInitialRect.top}px`;
-                noButton.classList.add('moving'); // CSS'de position: absolute aktifleşir
+            createClickRipple(clientX, clientY);
+            createStardustEffect(clientX, clientY);
+            setTimeout(() => createPermanentStar(clientX, clientY), 150);
+            triggerRomanticMessage(); // Mesajı tetikle
+            starCount++;
 
-                // Kısa bir gecikme sonrası ilk hareketi yap
-                setTimeout(moveButton, 50);
-            } else if (noButton.classList.contains('moving')) {
-                 // Zaten hareket ediyorsa sadece yeni konuma taşı
-                 moveButton();
+             // Atmosfer Değişimi Kontrolü
+             if (starCount === atmosphereChangeThreshold) {
+                 document.documentElement.style.setProperty('--bg-overlay-opacity', '1');
+                 document.documentElement.style.setProperty('--bg-overlay-color', 'radial-gradient(ellipse at center, rgba(60, 20, 80, 0.4) 0%, transparent 75%)'); // Morumsu ton
+             } else if (starCount === atmosphereChangeThreshold * 2) {
+                 document.documentElement.style.setProperty('--bg-overlay-color', 'radial-gradient(ellipse at center, rgba(20, 60, 80, 0.5) 0%, transparent 70%)'); // Mavimsi ton
+             }
+        }
+        spaceCanvas.addEventListener('click', handleInteraction);
+        spaceCanvas.addEventListener('touchstart', handleInteraction, { passive: false });
+
+        // --- Efekt Oluşturma Fonksiyonları ---
+        function createClickRipple(x, y) { /* Öncekiyle aynı */
+            const ripple = document.createElement('div');
+            ripple.classList.add('click-ripple');
+            ripple.style.left = `${x}px`; ripple.style.top = `${y}px`;
+            spaceCanvas.appendChild(ripple);
+            ripple.addEventListener('animationend', () => ripple.remove());
+        }
+
+        function createStardustEffect(x, y) { /* Öncekiyle aynı, sadece numParticles kullanıyor */
+             const spreadRadius = window.innerWidth < 768 ? 40 : 60;
+             const animationDuration = 800;
+             for (let i = 0; i < numParticles; i++) {
+                const dust = document.createElement('div');
+                dust.classList.add('stardust');
+                const angle = random(0, Math.PI * 2); const radius = random(spreadRadius * 0.2, spreadRadius);
+                const startX = x + Math.cos(angle) * radius; const startY = y + Math.sin(angle) * radius;
+                dust.style.left = `${startX}px`; dust.style.top = `${startY}px`;
+                const particleSize = random(2, 4); dust.style.width = `${particleSize}px`; dust.style.height = `${particleSize}px`;
+                const dustColor = Math.random() > 0.4 ? 'var(--dust-color-1)' : 'var(--dust-color-2)';
+                dust.style.backgroundColor = dustColor; dust.style.boxShadow = `0 0 ${random(3, 6)}px ${random(1, 2)}px ${dustColor}`;
+                spaceCanvas.appendChild(dust);
+                const animation = dust.animate([
+                    { transform: `translate(0, 0) scale(1)`, opacity: 1, offset: 0 },
+                    { transform: `translate(${x - startX}px, ${y - startY}px) scale(0.7)`, opacity: 0.9, offset: 0.7 },
+                    { transform: `translate(${x - startX}px, ${y - startY}px) scale(0.1)`, opacity: 0, offset: 1 }
+                ], { duration: animationDuration + random(-150, 150), easing: 'cubic-bezier(0.7, 0, 0.8, 0.6)', fill: 'forwards' });
+                animation.onfinish = () => dust.remove();
             }
         }
 
-        // Fare üzerine gelince tetiklenecek fonksiyon (isteğe bağlı)
-        // function handleNoHover() {
-        //     if (yesButton.disabled) return;
-        //     // Tıklama ile aynı mantığı kullanabiliriz
-        //     if (!noButton.classList.contains('moving') && noButtonInitialRect) {
-        //         noButton.style.left = `${noButtonInitialRect.left}px`;
-        //         noButton.style.top = `${noButtonInitialRect.top}px`;
-        //         noButton.classList.add('moving');
-        //         setTimeout(moveButton, 50);
-        //     } else if (noButton.classList.contains('moving')) {
-        //          moveButton();
-        //     }
-        // }
-
-
-        function moveButton() {
-             if (!noButton.classList.contains('moving') || yesButton.disabled) return;
-
-            const buttonRect = noButton.getBoundingClientRect();
-            const bodyRect = document.body.getBoundingClientRect();
-            const padding = 15; // Kenarlara daha fazla boşluk bırakalım
-
-            const maxX = bodyRect.width - buttonRect.width - padding;
-            const maxY = bodyRect.height - buttonRect.height - padding;
-            const minX = padding;
-            const minY = padding;
-
-             let randomX = Math.max(minX, Math.random() * (maxX - minX) + minX);
-             let randomY = Math.max(minY, Math.random() * (maxY - minY) + minY);
-
-            noButton.style.left = `${randomX}px`;
-            noButton.style.top = `${randomY}px`;
+        function createPermanentStar(x, y) { /* Öncekiyle aynı, çeşitlilik içeriyor */
+            const star = document.createElement('div');
+            star.classList.add('formed-star');
+            star.style.left = `${x}px`; star.style.top = `${y}px`;
+            const coreSize = random(4, 8); star.style.width = `${coreSize}px`; star.style.height = `${coreSize}px`;
+            const tempShift = random(-20, 20); star.style.filter = `hue-rotate(${tempShift}deg) brightness(${random(0.9, 1.3)})`;
+            star.style.backgroundColor = `var(--star-core-base)`;
+            const glowSize = coreSize * 2.5; const haloSize = coreSize * 5;
+            star.style.boxShadow = `0 0 ${glowSize}px ${coreSize * 0.8}px var(--star-glow-base), 0 0 ${haloSize}px ${coreSize * 1.5}px rgba(255, 255, 255, 0.15)`;
+            spaceCanvas.appendChild(star);
         }
+
+        // --- Arka Plan Kayan Yıldızları Oluşturma ve Yönetme ---
+        function createBackgroundShootingStar() {
+            const star = document.createElement('div');
+            star.classList.add('bg-shooting-star');
+
+            // Rastgele başlangıç pozisyonu ve açı
+            const startSide = randomInt(0, 3); // 0:top, 1:left, 2:right, 3:bottom (nadiren)
+            let startXPercent, startYPercent, angle;
+            const duration = random(3, 8); // Daha yavaşlar
+
+            switch (startSide) {
+                case 0: // Top
+                    startXPercent = random(0, 100); startYPercent = -5; angle = random(120, 160); break;
+                case 1: // Left
+                    startXPercent = -5; startYPercent = random(0, 100); angle = random(30, 70); break;
+                case 2: // Right
+                    startXPercent = 105; startYPercent = random(0, 100); angle = random(210, 250); break;
+                case 3: // Bottom (daha az olasılıkla)
+                default:
+                     if (Math.random() > 0.8) { // Sadece %20 ihtimalle alttan başlasın
+                         startXPercent = random(0, 100); startYPercent = 105; angle = random(300, 340);
+                     } else { // Çoğunlukla üstten
+                         startXPercent = random(0, 100); startYPercent = -5; angle = random(120, 160);
+                     }
+                     break;
+            }
+
+            star.style.left = `${startXPercent}%`;
+            star.style.top = `${startYPercent}%`;
+            star.style.transform = `rotate(${angle}deg)`;
+
+            bgStarsContainer.appendChild(star);
+
+            // Animasyon (JS Web Animations API)
+             const distance = Math.max(window.innerWidth, window.innerHeight) * 1.5; // Ekranın köşegeninden daha uzun mesafe
+             const moveX = Math.cos((angle - 90) * Math.PI / 180) * distance;
+             const moveY = Math.sin((angle - 90) * Math.PI / 180) * distance;
+
+            const animation = star.animate([
+                { transform: `rotate(${angle}deg) translate(0, 0) scaleY(0.5)`, opacity: 0 }, // Başlangıçta kısa ve gizli
+                { transform: `rotate(${angle}deg) translate(${moveX * 0.05}px, ${moveY * 0.05}px) scaleY(1)`, opacity: 1, offset: 0.1 }, // Hızla belir ve uzamaya başla
+                { transform: `rotate(${angle}deg) translate(${moveX}px, ${moveY}px) scaleY(1)`, opacity: 0, offset: 1 } // Uzaklaşırken kaybol
+            ], {
+                duration: duration * 1000,
+                easing: 'linear',
+                 delay: random(0, 5000) // Başlangıç gecikmesi
+            });
+
+            // Animasyon bitince elementi kaldır ve yenisini oluştur (sürekli akış için)
+            animation.onfinish = () => {
+                star.remove();
+                 // Hemen yenisini oluşturmak yerine, belirli aralıklarla kontrol edip eksik varsa eklemek daha iyi olabilir
+                 // Şimdilik basit tutalım: bitince yenisini rastgele zamanla tetikle
+                 setTimeout(createBackgroundShootingStar, random(1000, 5000));
+            };
+        }
+
+        // --- Mesaj Yönetimi (Sıralı Gösterim) ---
+        function triggerRomanticMessage() {
+            let phraseText = "";
+            let isFinal = false;
+
+            if (starCount < romanticPhrases.length) {
+                phraseText = romanticPhrases[starCount];
+            } else if (starCount === romanticPhrases.length) {
+                phraseText = "Ve evrenimiz aşkla doldu... ∞";
+                isFinal = true;
+            } else {
+                return; // Tüm mesajlar gösterildi, daha fazla gösterme
+            }
+
+            // Mevcut mesajı kaldır (varsa)
+            if (currentMessageElement) {
+                const oldMsg = currentMessageElement; // Referansı sakla
+                oldMsg.classList.remove('phrase-fade-in');
+                oldMsg.classList.add('phrase-fade-out');
+                // Animasyon bitince DOM'dan kaldır
+                oldMsg.addEventListener('animationend', () => {
+                    // Hata kontrolü: Element hala DOM'daysa kaldır
+                    if (oldMsg.parentNode === messageDisplay) {
+                        messageDisplay.removeChild(oldMsg);
+                    }
+                }, { once: true }); // Olay dinleyiciyi bir kez çalıştır
+            }
+
+            // Yeni mesajı oluştur ve göster
+            const newPhraseElement = document.createElement('p');
+            newPhraseElement.classList.add('romantic-phrase');
+            if (isFinal) {
+                 newPhraseElement.classList.add('final-phrase');
+            }
+            newPhraseElement.textContent = phraseText;
+
+            messageDisplay.appendChild(newPhraseElement);
+            newPhraseElement.classList.add('phrase-fade-in'); // Fade-in animasyonunu başlat
+
+            // Yeni mesajı mevcut olarak ayarla
+            currentMessageElement = newPhraseElement;
+        }
+
+
+        // --- Başlatma Fonksiyonları ---
+        function initCosmos() {
+            // Arka plan kayan yıldızlarını başlat
+            for (let i = 0; i < numBgShootingStars; i++) {
+                 // Başlangıçta rastgele gecikmelerle oluştur
+                 setTimeout(createBackgroundShootingStar, random(0, 3000));
+            }
+
+            // (Mobil için parçacık sayısı zaten global değişkende ayarlandı)
+        }
+
+        window.addEventListener('load', initCosmos);
+        // Ekran yeniden boyutlandığında parçacık sayısını ayarla (opsiyonel, basit tutuldu)
+        window.addEventListener('resize', () => {
+             numParticles = window.innerWidth < 768 ? 15 : 25;
+        });
 
     </script>
 
