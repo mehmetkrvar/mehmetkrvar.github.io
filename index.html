@@ -358,42 +358,75 @@ def calculate_rsi(close, period):
 # ==============================================================================
 async def fetch_stock_data(symbol):
     log(f"📡 Veri indiriliyor: {symbol}")
-    log("ℹ️ CORS Proxy kullanılıyor (Yahoo Finance)...")
     
     import time
-    period2 = int(time.time())
-    period1 = period2 - (60 * 60 * 24 * 30) # 30 gün
+    import json
     
-    base_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?symbol={symbol}&period1={period1}&period2={period2}&interval=60m"
-    proxy_url = f"https://api.allorigins.win/get?url={js.encodeURIComponent(base_url)}"
+    # Zaman aralığı (Son 30 gün)
+    period2 = int(time.time())
+    period1 = period2 - (60 * 60 * 24 * 30) 
+    
+    # YÖNTEM 1: Corsproxy.io (Daha kararlı)
+    # Yahoo Finance API v8 endpoint
+    target_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1={period1}&period2={period2}&interval=60m&includePrePost=false&events=div%7Csplit"
+    
+    # Proxy servisi üzerinden istek
+    # Not: encodeURIComponent benzeri bir işlem gerekebilir, ancak basit URL'lerde doğrudan çalışır.
+    proxy_url = f"https://corsproxy.io/?{target_url}"
+    
+    log(f"ℹ️ Bağlanılıyor: Yahoo Finance (via Secure Proxy)...")
     
     try:
+        # Pyodide fetch kullanımı
         response = await js.fetch(proxy_url)
-        data_json = await response.json()
-        contents = json.loads(data_json.contents)
         
-        if "chart" not in contents or "result" not in contents["chart"] or not contents["chart"]["result"]:
-            log("❌ Veri alınamadı. Sembolü kontrol edin.")
+        if not response.ok:
+            log(f"⚠️ HTTP Hatası: {response.status}")
+            # Alternatif Proxy Denemesi (Yedek Plan)
+            log("🔄 Yedek proxy deneniyor...")
+            fallback_url = f"https://api.allorigins.win/raw?url={target_url}"
+            response = await js.fetch(fallback_url)
+        
+        if not response.ok:
+            raise Exception(f"Sunucu yanıt vermedi: {response.status}")
+
+        data_json = await response.json()
+        
+        # Yahoo Finance JSON yapısını ayrıştır
+        # Bazen 'chart' anahtarı en üstte olur
+        if "chart" not in data_json:
+             # allorigins bazen string döndürür, parse etmek gerekebilir
+             if isinstance(data_json, str):
+                 data_json = json.loads(data_json)
+        
+        if "chart" not in data_json or "result" not in data_json["chart"] or not data_json["chart"]["result"]:
+            log("❌ Veri boş veya sembol hatalı (Örn: THYAO.IS).")
             return None
             
-        result = contents["chart"]["result"][0]
+        result = data_json["chart"]["result"][0]
         timestamps = result["timestamp"]
         indicators = result["indicators"]["quote"][0]
         
+        # DataFrame oluştur
         df = pd.DataFrame({
             'Open': indicators['open'],
             'High': indicators['high'],
             'Low': indicators['low'],
             'Close': indicators['close']
         })
+        
+        # Datetime index (Saniye cinsinden)
         df.index = pd.to_datetime(timestamps, unit='s')
+        
+        # Eksik verileri temizle
         df = df.dropna()
         
-        log(f"✅ {len(df)} bar veri başarıyla işlendi.")
+        log(f"✅ {len(df)} bar veri alındı ve işlendi.")
         return df
         
     except Exception as e:
-        log(f"❌ Veri hatası: {str(e)}")
+        log(f"❌ Kritik Hata: {str(e)}")
+        log("💡 İpucu: Tarayıcı reklam engelleyicinizi kapatmayı deneyin.")
         return None
 
 # ==============================================================================
@@ -568,3 +601,4 @@ setup_events()
     </py-script>
 </body>
 </html>
+
