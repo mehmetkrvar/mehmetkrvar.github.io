@@ -3,334 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aşk Kıvılcımları - Evrensel Mobil++</title>
+    <title>AI Algorithmic Trading - GitHub Edition</title>
+    
+    <link rel="stylesheet" href="https://pyscript.net/releases/2023.05.1/pyscript.css" />
+    <script defer src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         :root {
-            /* Temel Renkler */
-            --bg-color: #02000f;
-            --dust-color-1: #ffffff;
-            --dust-color-2: #fff0c1;
-            --star-glow-base: rgba(255, 235, 190, 0.7);
-            --star-core-base: #fff8e1;
-            --text-color: #e8eaf6;
-            --instruction-color: rgba(200, 220, 255, 0.6);
-            --ripple-color: rgba(255, 255, 255, 0.5);
-            --bg-star-color: rgba(255, 255, 255, 0.7);
-
-            /* Duyarlı Font Boyutları */
-            --base-font-size: clamp(10px, 1.8vw, 16px);
-            --message-font-size: clamp(1.1em, 2.8vw, 1.5em); /* Varsayılan mesaj boyutu */
-
-             /* Atmosfer Değişimi İçin */
-            --bg-overlay-opacity: 0;
-            --bg-overlay-color: radial-gradient(ellipse at center, rgba(40, 10, 60, 0.3) 0%, transparent 70%);
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --border: #334155;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--bg-color);
-            font-family: 'Georgia', 'Times New Roman', Times, serif;
-            font-size: var(--base-font-size);
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        #space-canvas {
-            position: relative;
+        .container {
+            max-width: 1000px;
             width: 100%;
-            height: 100%;
-            cursor: crosshair;
-            background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            background-position: 0 0;
-            animation: moveBackground 240s linear infinite;
-            z-index: 1;
-        }
-        #space-canvas::after {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-overlay-color); opacity: var(--bg-overlay-opacity);
-            transition: opacity 5s ease-in-out; pointer-events: none; z-index: 2;
         }
 
-        @keyframes moveBackground {
-            from { background-position: 0 0; }
-            to { background-position: 1200px 1200px; }
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        header p { color: var(--text-muted); }
+
+        /* Controls */
+        .controls {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
         }
 
-        #bg-shooting-stars {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none; overflow: hidden; z-index: 0;
-        }
-        .bg-shooting-star {
-            position: absolute; width: 1px; height: 50px;
-            background: linear-gradient(to bottom, var(--bg-star-color) 0%, transparent 100%);
-            filter: blur(0.5px); opacity: 0; transform-origin: top center;
-        }
-
-        #instructions {
-            position: absolute; top: 30px; left: 50%;
-            transform: translateX(-50%); color: var(--instruction-color);
-            font-size: 0.9em; font-style: italic; pointer-events: none;
-            opacity: 1; transition: opacity 1s ease-out 3s; z-index: 30;
+        input {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            flex-grow: 1;
+            font-size: 1rem;
+            outline: none;
         }
 
-        .click-ripple {
-            position: absolute; width: 20px; height: 20px;
-            border: 2px solid var(--ripple-color); border-radius: 50%;
-            transform: translate(-50%, -50%) scale(0); opacity: 1;
-            pointer-events: none; animation: rippleEffect 0.6s ease-out forwards;
-            z-index: 10;
+        button {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        @keyframes rippleEffect {
-            from { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            to { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        button:hover { background: #2563eb; transform: translateY(-2px); }
+        button:disabled { background: var(--text-muted); cursor: not-allowed; }
+
+        /* Grid Layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
         }
 
-        .stardust {
-            position: absolute; width: 3px; height: 3px;
-            background-color: var(--dust-color-1); border-radius: 50%;
-            pointer-events: none; opacity: 0; z-index: 20;
-        }
-
-        .formed-star {
-            position: absolute; border-radius: 50%; pointer-events: none;
-            transform: translate(-50%, -50%) scale(0); opacity: 0;
-            animation: appearStar 1s ease-out forwards 0.5s; z-index: 5;
-        }
-        @keyframes appearStar {
-             0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
-            70% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 1; }
-        }
-
-        #message-display {
-            position: absolute; bottom: 5%; left: 5%; right: 5%;
-            text-align: center; z-index: 30; pointer-events: none;
-            height: 5em; display: flex; justify-content: center; align-items: center;
-        }
-
-        .romantic-phrase {
-            position: absolute; color: var(--text-color);
-            font-size: var(--message-font-size); /* CSS değişkeni kullanılıyor */
-            text-shadow: 0 0 7px rgba(180, 200, 255, 0.8);
-            padding: 8px 15px;
-            background: linear-gradient(rgba(15, 25, 50, 0.2), rgba(15, 25, 50, 0.6), rgba(15, 25, 50, 0.2));
-            border-radius: 10px; max-width: 90%; word-wrap: break-word;
-            opacity: 0; transform: translateY(10px) scale(0.95);
-        }
-        .phrase-fade-in { animation: fadeInPhrase 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .phrase-fade-out { animation: fadeOutPhrase 0.2s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
-
-        @keyframes fadeInPhrase {
-             from { opacity: 0; transform: translateY(10px) scale(0.95); }
-             to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes fadeOutPhrase {
-             from { opacity: 1; transform: translateY(0) scale(1); }
-             to { opacity: 0; transform: translateY(-10px) scale(0.95); }
-        }
-        .final-phrase {
-             font-size: clamp(1.3em, 3.2vw, 1.8em); font-weight: bold;
-             text-shadow: 0 0 12px rgba(255, 220, 180, 0.9);
-        }
-
-        /* --- Mobil Cihaz Ayarlamaları --- */
         @media (max-width: 768px) {
-            :root {
-                /* Mobil için mesaj font boyutunu DAHA DA artır */
-                 --message-font-size: clamp(1.4em, 4.5vw, 1.9em); /* Min, Tercih edilen, Max değerleri DAHA DA artırıldı */
-            }
-
-            #instructions {
-                 font-size: 0.85em;
-                 top: 25px;
-                 max-width: 80%;
-            }
-
-             #message-display {
-                 bottom: 4%;
-                 height: 6em;
-             }
-
-             /* Not: Yıldız boyutu doğrudan JS içinde ayarlanacak */
+            .dashboard { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; }
         }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 25px;
+            height: fit-content;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Terminal/Log Output */
+        #console-output {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #10b981;
+            height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+        
+        /* Result Highlights */
+        .result-box {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .price-display {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+        .signal-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .signal-buy { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .signal-sell { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        .signal-neutral { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        /* Loading Spinner */
+        #loader {
+            display: none;
+            margin-left: 10px;
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
     </style>
+    
+    <py-config>
+        packages = ["pandas", "numpy", "pyodide-http"]
+    </py-config>
 </head>
 <body>
 
-    <div id="bg-shooting-stars">
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-robot"></i> AI Trade Engine</h1>
+            <p>Institutional Grade Analysis & Genetic Optimization</p>
+        </header>
+
+        <div class="controls">
+            <input type="text" id="symbol_input" placeholder="Hisse Kodu (Örn: THYAO.IS, AAPL, GARAN.IS)" value="THYAO.IS">
+            <button id="run_btn" py-click="start_analysis_event">
+                <i class="fas fa-play"></i> ANALİZİ BAŞLAT
+                <div id="loader" class="spinner"></div>
+            </button>
         </div>
 
-    <div id="space-canvas">
-        <div id="instructions">Evreni aşkla doldurmak için dokun veya tıkla...</div>
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-terminal"></i> SİSTEM LOGLARI
+                </div>
+                <div id="console-output">Sistem hazır. Hisse kodu girin ve başlatın...</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-chart-line"></i> AI KARARI
+                </div>
+                
+                <div class="result-box">
+                    <div id="final-signal" class="signal-badge signal-neutral">BEKLENİYOR</div>
+                    <div id="current-price" class="price-display">--.--</div>
+                    <small id="last-update" style="color: var(--text-muted)">Veri yok</small>
+                </div>
+
+                <div id="details-panel">
+                    <div class="metric-row">
+                        <span>SuperTrend:</span>
+                        <span id="st-val">--</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Chandelier:</span>
+                        <span id="ce-val">--</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>RSI (Wilder):</span>
+                        <span id="rsi-val">--</span>
+                    </div>
+                    <hr style="border-color: var(--border); opacity: 0.3;">
+                    <div class="metric-row">
+                        <span>AI Güven Skoru (Fit):</span>
+                        <span id="fit-val" style="color: var(--accent-blue)">--</span>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-    <div id="message-display">
-        </div>
+    <py-script>
+import asyncio
+import js
+import pandas as pd
+import numpy as np
+import pyodide_http
+import json
+from pyodide.http import open_url
+from js import console
 
-    <script>
-        // Element Referansları
-        const spaceCanvas = document.getElementById('space-canvas');
-        const instructions = document.getElementById('instructions');
-        const messageDisplay = document.getElementById('message-display');
-        const bgStarsContainer = document.getElementById('bg-shooting-stars');
+# Patch requests for browser
+pyodide_http.patch_all()
 
-        // Durum Değişkenleri
-        let starCount = 0;
-        let instructionVisible = true;
-        let numParticles = window.innerWidth < 768 ? 15 : 25;
-        let currentMessageElement = null;
-        const atmosphereChangeThreshold = 7;
-        const numBgShootingStars = 20; // Arka plan yıldız sayısı artırıldı
-        // --- Romantik Mesajlar (Değişiklik yok) ---
-        const romanticPhrases = [
-             "Bir dokunuş... ve bir evren uyandı.", "Karanlıkta parlayan ilk ışık sensin.", "Yalnız atomlar dansa durdu.",
-            "Yörüngelerimiz kesiştiğinde zaman durdu.", "İki ruh... şimdi tek bir takımada.", "Seninle her an, yeni bir galaksi keşfi.",
-            "Aramızdaki çekim, tüm karadeliklerden güçlü.", "Bu bizim sonsuzluğumuzun başlangıcı.", "Yarattığımız ışık, evrene yolu gösteriyor.",
-            "Ve aşkımız, kozmosun en güzel şarkısı oldu.", "Yıldızlar şahidimiz olsun bu sevdaya...",
-            "Kalplerimiz aynı ritimde atıyor, nebula gibi.", "Seninle kaybolmak, asıl kendimi bulmak demek.",
-            "Gözlerindeki ışıltı, en parlak süpernova.", "Birlikte yazdığımız bu destan hiç bitmesin."
-        ];
+# ==============================================================================
+# BROWSER COMPATIBLE MATH ENGINE (NO NUMBA)
+# ==============================================================================
 
+def log(message):
+    """HTML konsoluna yazar"""
+    console_elem = js.document.getElementById("console-output")
+    console_elem.innerHTML += f"> {message}<br>"
+    console_elem.scrollTop = console_elem.scrollHeight
 
-        // --- Yardımcı Fonksiyonlar ---
-        function random(min, max) { return Math.random() * (max - min) + min; }
-        function randomInt(min, max) { return Math.floor(random(min, max + 1)); }
+def calculate_supertrend(high, low, close, period, multiplier):
+    # Pandas ile vektörel hesaplama (Numba yerine)
+    m = len(close)
+    tr1 = pd.DataFrame(high - low)
+    tr2 = pd.DataFrame(abs(high - pd.Series(close).shift(1)))
+    tr3 = pd.DataFrame(abs(low - pd.Series(close).shift(1)))
+    frames = [tr1, tr2, tr3]
+    tr = pd.concat(frames, axis=1, join='inner').max(axis=1)
+    atr = tr.ewm(alpha=1/period, adjust=False).mean()
+    
+    hl2 = (high + low) / 2
+    basic_upper = hl2 + (multiplier * atr)
+    basic_lower = hl2 - (multiplier * atr)
+    
+    final_upper = basic_upper.copy()
+    final_lower = basic_lower.copy()
+    trend = np.zeros(m)
+    
+    # Döngüsel mantık (Optimize edilmiş Python döngüsü)
+    # Javascript üzerinde çok uzun döngüleri önlemek için son 500 bar yeterli olabilir ama
+    # algoritma gereği hepsini hesaplıyoruz.
+    
+    f_upper = final_upper.values
+    f_lower = final_lower.values
+    c = close.values
+    b_upper = basic_upper.values
+    b_lower = basic_lower.values
+    
+    # İlk değerler
+    trend[period-1] = 1
+    
+    for i in range(period, m):
+        if b_upper[i] < f_upper[i-1] or c[i-1] > f_upper[i-1]:
+            f_upper[i] = b_upper[i]
+        else:
+            f_upper[i] = f_upper[i-1]
+            
+        if b_lower[i] > f_lower[i-1] or c[i-1] < f_lower[i-1]:
+            f_lower[i] = b_lower[i]
+        else:
+            f_lower[i] = f_lower[i-1]
+            
+        if trend[i-1] == 1:
+            if c[i] < f_lower[i-1]:
+                trend[i] = -1
+            else:
+                trend[i] = 1
+        else:
+            if c[i] > f_upper[i-1]:
+                trend[i] = 1
+            else:
+                trend[i] = -1
+                
+    return trend, atr.values
 
-        // --- Olay Yönetimi ---
-        function handleInteraction(event) {
-            event.preventDefault();
-            let clientX, clientY;
-            if (event.touches) {
-                clientX = event.touches[0].clientX; clientY = event.touches[0].clientY;
-            } else {
-                clientX = event.clientX; clientY = event.clientY;
-            }
-
-            if (instructionVisible) {
-                instructions.style.opacity = '0'; instructionVisible = false;
-            }
-
-            createClickRipple(clientX, clientY);
-            createStardustEffect(clientX, clientY);
-            setTimeout(() => createPermanentStar(clientX, clientY), 150);
-            triggerRomanticMessage();
-            starCount++;
-
-             // Atmosfer Değişimi Kontrolü
-             if (starCount === atmosphereChangeThreshold) {
-                 document.documentElement.style.setProperty('--bg-overlay-opacity', '0.3');
-                 document.documentElement.style.setProperty('--bg-overlay-color', 'radial-gradient(ellipse at center, rgba(60, 20, 80, 0.4) 0%, transparent 75%)');
-             } else if (starCount === atmosphereChangeThreshold * 2) {
-                  document.documentElement.style.setProperty('--bg-overlay-opacity', '0.4');
-                 document.documentElement.style.setProperty('--bg-overlay-color', 'radial-gradient(ellipse at center, rgba(20, 60, 80, 0.5) 0%, transparent 70%)');
-             }
-        }
-        spaceCanvas.addEventListener('click', handleInteraction);
-        spaceCanvas.addEventListener('touchstart', handleInteraction, { passive: false });
-
-        // --- Efekt Oluşturma Fonksiyonları ---
-        function createClickRipple(x, y) { /* Değişiklik yok */
-            const ripple = document.createElement('div'); ripple.classList.add('click-ripple');
-            ripple.style.left = `${x}px`; ripple.style.top = `${y}px`;
-            spaceCanvas.appendChild(ripple);
-            ripple.addEventListener('animationend', () => ripple.remove());
-        }
-
-        function createStardustEffect(x, y) { /* Değişiklik yok */
-             const spreadRadius = window.innerWidth < 768 ? 40 : 60;
-             const animationDuration = 800;
-             for (let i = 0; i < numParticles; i++) {
-                const dust = document.createElement('div'); dust.classList.add('stardust');
-                const angle = random(0, Math.PI * 2); const radius = random(spreadRadius * 0.2, spreadRadius);
-                const startX = x + Math.cos(angle) * radius; const startY = y + Math.sin(angle) * radius;
-                dust.style.left = `${startX}px`; dust.style.top = `${startY}px`;
-                const particleSize = random(2, 4); dust.style.width = `${particleSize}px`; dust.style.height = `${particleSize}px`;
-                const dustColor = Math.random() > 0.4 ? 'var(--dust-color-1)' : 'var(--dust-color-2)';
-                dust.style.backgroundColor = dustColor; dust.style.boxShadow = `0 0 ${random(3, 6)}px ${random(1, 2)}px ${dustColor}`;
-                spaceCanvas.appendChild(dust);
-                const animation = dust.animate([
-                    { transform: `translate(0, 0) scale(1)`, opacity: 1, offset: 0 }, { transform: `translate(${x - startX}px, ${y - startY}px) scale(0.7)`, opacity: 0.9, offset: 0.7 },
-                    { transform: `translate(${x - startX}px, ${y - startY}px) scale(0.1)`, opacity: 0, offset: 1 }
-                ], { duration: animationDuration + random(-150, 150), easing: 'cubic-bezier(0.7, 0, 0.8, 0.6)', fill: 'forwards' });
-                animation.onfinish = () => dust.remove();
-            }
-        }
-
-        // Kalıcı Yıldızı Oluşturur (Mobil Boyut DAHA BÜYÜK)
-        function createPermanentStar(x, y) {
-            const star = document.createElement('div');
-            star.classList.add('formed-star');
-            star.style.left = `${x}px`; star.style.top = `${y}px`;
-
-            // *** MOBİL BOYUT DAHA DA BÜYÜK ***
-            const isMobile = window.innerWidth < 768;
-            const coreSize = isMobile ? random(8, 13) : random(4, 8); // Mobil: 8-13px, Desktop: 4-8px
-            // *** Ayar Sonu ***
-
-            star.style.width = `${coreSize}px`; star.style.height = `${coreSize}px`;
-
-            const tempShift = random(-20, 20); star.style.filter = `hue-rotate(${tempShift}deg) brightness(${random(0.9, 1.3)})`;
-            star.style.backgroundColor = `var(--star-core-base)`;
-            const glowSize = coreSize * 2.5; const haloSize = coreSize * 5;
-            star.style.boxShadow = `0 0 ${glowSize}px ${coreSize * 0.8}px var(--star-glow-base), 0 0 ${haloSize}px ${coreSize * 1.5}px rgba(255, 255, 255, 0.15)`;
-            spaceCanvas.appendChild(star);
-        }
-
-
-        // --- Arka Plan Kayan Yıldızları Oluşturma ve Yönetme ---
-        function createBackgroundShootingStar() { /* Değişiklik yok */
-            const star = document.createElement('div'); star.classList.add('bg-shooting-star');
-            const startSide = randomInt(0, 3); let startXPercent, startYPercent, angle; const duration = random(4, 9);
-             switch (startSide) {
-                case 0: startXPercent = random(0, 100); startYPercent = -5; angle = random(120, 160); break;
-                case 1: startXPercent = -5; startYPercent = random(0, 100); angle = random(30, 70); break;
-                case 2: startXPercent = 105; startYPercent = random(0, 100); angle = random(210, 250); break;
-                case 3: default:
-                     if (Math.random() > 0.85) { startXPercent = random(0, 100); startYPercent = 105; angle = random(300, 340); }
-                     else { startXPercent = random(0, 100); startYPercent = -5; angle = random(120, 160); } break;
-            }
-            star.style.left = `${startXPercent}%`; star.style.top = `${startYPercent}%`; star.style.transform = `rotate(${angle}deg)`;
-            bgStarsContainer.appendChild(star);
-             const distance = Math.max(window.innerWidth, window.innerHeight) * 1.5;
-             const moveX = Math.cos((angle - 90) * Math.PI / 180) * distance; const moveY = Math.sin((angle - 90) * Math.PI / 180) * distance;
-            const animation = star.animate([
-                { transform: `rotate(${angle}deg) translate(0, 0) scaleY(0.5)`, opacity: 0 },
-                { transform: `rotate(${angle}deg) translate(${moveX * 0.05}px, ${moveY * 0.05}px) scaleY(1)`, opacity: random(0.4, 0.8), offset: 0.1 },
-                { transform: `rotate(${angle}deg) translate(${moveX}px, ${moveY}px) scaleY(1)`, opacity: 0, offset: 1 }
-            ], { duration: duration * 1000, easing: 'linear', delay: random(0, 5000) });
-            animation.onfinish = () => { star.remove(); setTimeout(createBackgroundShootingStar, random(1500, 4000)); }; // Biraz daha sık tetikle (daha çok yıldız için)
-        }
-
-        // --- Mesaj Yönetimi (Sıralı Gösterim) ---
-        function triggerRomanticMessage() { /* Değişiklik yok */
-            let phraseText = ""; let isFinal = false;
-            if (starCount < romanticPhrases.length) { phraseText = romanticPhrases[starCount]; }
-            else if (starCount === romanticPhrases.length) { phraseText = "Ve evrenimiz aşkla doldu... ∞"; isFinal = true; }
-            else { return; }
-
-            if (currentMessageElement) {
-                const oldMsg = currentMessageElement; oldMsg.classList.remove('phrase-fade-in'); oldMsg.classList.add('phrase-fade-out');
-                oldMsg.addEventListener('animationend', () => { if (oldMsg.parentNode === messageDisplay) { messageDisplay.removeChild(oldMsg); } }, { once: true });
-            }
-            const newPhraseElement = document.createElement('p'); newPhraseElement.classList.add('romantic-phrase');
-            if (isFinal) { newPhraseElement.classList.add('final-phrase'); }
-            newPhraseElement.textContent = phraseText; messageDisplay.appendChild(newPhraseElement);
-            newPhraseElement.classList.add('phrase-fade-in'); currentMessageElement = newPhraseElement;
-        }
-
-        // --- Başlatma Fonksiyonları ---
-        function initCosmos() {
-            for (let i = 0; i < numBgShootingStars; i++) { // Artırılmış sayıyla döngü
-                 setTimeout(createBackgroundShootingStar, random(0, 4000));
-            }
-        }
-        window.addEventListener('load', initCosmos);
-        window.addEventListener('resize', () => { numParticles = window.innerWidth < 768 ? 15 : 25; });
-
-    </script>
-
-</body>
-</html>
+def calculate_chandelier(high, low, close, length, mult):
+    # Basit Chandelier (Numba'sız)
+    high_s = pd.Series(high)
+    low_s = pd.Series(low)
+    close_s = pd.Series(close)
+    
+    tr1 = high_s - low_s
+    tr2 = abs(high_s - close_s.shift(1))
+    tr3 = abs(low_s - close_s.shift(1))
+    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+    atr = tr.ewm(alpha=1/length, adjust=False).mean()
+    
+    highest_high = high_s.rolling(window=length).max()
+    lowest_low = low_s.rolling(window=length).min()
+    
+    long_stop = highest_high - (atr * mult)
+    short_stop = lowest_low + (atr * mult)
