@@ -198,7 +198,7 @@
 
         <div class="controls">
             <input type="text" id="symbol_input" placeholder="Hisse Kodu (Örn: THYAO.IS, AAPL, GARAN.IS)" value="THYAO.IS">
-            <button id="run_btn" py-click="start_analysis_event">
+            <button id="run_btn">
                 <i class="fas fa-play"></i> ANALİZİ BAŞLAT
                 <div id="loader" class="spinner"></div>
             </button>
@@ -209,7 +209,7 @@
                 <div class="card-title">
                     <i class="fas fa-terminal"></i> SİSTEM LOGLARI
                 </div>
-                <div id="console-output">Sistem hazır. Hisse kodu girin ve başlatın...</div>
+                <div id="console-output">Sistem hazır. Python motoru yükleniyor...</div>
             </div>
 
             <div class="card">
@@ -255,12 +255,14 @@ import pyodide_http
 import json
 from pyodide.http import open_url
 from js import console
+# Yeni import: Python fonksiyonunu JS eventine bağlamak için gerekli
+from pyodide.ffi import create_proxy
 
 # Patch requests for browser
 pyodide_http.patch_all()
 
 # ==============================================================================
-# BROWSER COMPATIBLE MATH ENGINE (NO NUMBA)
+# BROWSER COMPATIBLE MATH ENGINE
 # ==============================================================================
 
 def log(message):
@@ -270,7 +272,6 @@ def log(message):
     console_elem.scrollTop = console_elem.scrollHeight
 
 def calculate_supertrend(high, low, close, period, multiplier):
-    # Pandas ile vektörel hesaplama (Numba yerine)
     m = len(close)
     tr1 = pd.DataFrame(high - low)
     tr2 = pd.DataFrame(abs(high - pd.Series(close).shift(1)))
@@ -287,17 +288,12 @@ def calculate_supertrend(high, low, close, period, multiplier):
     final_lower = basic_lower.copy()
     trend = np.zeros(m)
     
-    # Döngüsel mantık (Optimize edilmiş Python döngüsü)
-    # Javascript üzerinde çok uzun döngüleri önlemek için son 500 bar yeterli olabilir ama
-    # algoritma gereği hepsini hesaplıyoruz.
-    
     f_upper = final_upper.values
     f_lower = final_lower.values
     c = close.values
     b_upper = basic_upper.values
     b_lower = basic_lower.values
     
-    # İlk değerler
     trend[period-1] = 1
     
     for i in range(period, m):
@@ -325,7 +321,6 @@ def calculate_supertrend(high, low, close, period, multiplier):
     return trend, atr.values
 
 def calculate_chandelier(high, low, close, length, mult):
-    # Basit Chandelier (Numba'sız)
     high_s = pd.Series(high)
     low_s = pd.Series(low)
     close_s = pd.Series(close)
@@ -341,3 +336,235 @@ def calculate_chandelier(high, low, close, length, mult):
     
     long_stop = highest_high - (atr * mult)
     short_stop = lowest_low + (atr * mult)
+    
+    direction = np.where(close_s > short_stop.shift(1), 1, 
+                np.where(close_s < long_stop.shift(1), -1, 0))
+    return direction
+
+def calculate_rsi(close, period):
+    delta = pd.Series(close).diff()
+    gain = (delta.where(delta > 0, 0)).fillna(0)
+    loss = (-delta.where(delta < 0, 0)).fillna(0)
+    
+    avg_gain = gain.ewm(alpha=1/period, adjust=False).mean()
+    avg_loss = loss.ewm(alpha=1/period, adjust=False).mean()
+    
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi.values
+
+# ==============================================================================
+# DATA FETCHER (PROXY REQUIRED FOR BROWSER)
+# ==============================================================================
+async def fetch_stock_data(symbol):
+    log(f"📡 Veri indiriliyor: {symbol}")
+    log("ℹ️ CORS Proxy kullanılıyor (Yahoo Finance)...")
+    
+    import time
+    period2 = int(time.time())
+    period1 = period2 - (60 * 60 * 24 * 30) # 30 gün
+    
+    base_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?symbol={symbol}&period1={period1}&period2={period2}&interval=60m"
+    proxy_url = f"https://api.allorigins.win/get?url={js.encodeURIComponent(base_url)}"
+    
+    try:
+        response = await js.fetch(proxy_url)
+        data_json = await response.json()
+        contents = json.loads(data_json.contents)
+        
+        if "chart" not in contents or "result" not in contents["chart"] or not contents["chart"]["result"]:
+            log("❌ Veri alınamadı. Sembolü kontrol edin.")
+            return None
+            
+        result = contents["chart"]["result"][0]
+        timestamps = result["timestamp"]
+        indicators = result["indicators"]["quote"][0]
+        
+        df = pd.DataFrame({
+            'Open': indicators['open'],
+            'High': indicators['high'],
+            'Low': indicators['low'],
+            'Close': indicators['close']
+        })
+        df.index = pd.to_datetime(timestamps, unit='s')
+        df = df.dropna()
+        
+        log(f"✅ {len(df)} bar veri başarıyla işlendi.")
+        return df
+        
+    except Exception as e:
+        log(f"❌ Veri hatası: {str(e)}")
+        return None
+
+# ==============================================================================
+# OPTIMIZATION & SIGNAL ENGINE
+# ==============================================================================
+class WebStrategy:
+    def __init__(self, df):
+        self.df = df
+        self.best_params = {}
+        
+    def evaluate(self, params):
+        h = self.df['High']
+        l = self.df['Low']
+        c = self.df['Close']
+        
+        st_trend, _ = calculate_supertrend(h, l, c, int(params['st_period']), params['st_mult'])
+        ce_dir = calculate_chandelier(h, l, c, int(params['ce_length']), 3.0)
+        rsi = calculate_rsi(c, int(params['rsi_len']))
+        
+        st_trend = np.array(st_trend)
+        ce_dir = np.array(ce_dir)
+        rsi = np.array(rsi)
+        close_arr = c.values
+        
+        signals = np.zeros(len(c))
+        long_cond = (st_trend == 1) & (ce_dir == 1) & (rsi > 50)
+        signals[long_cond] = 1
+        
+        pct_change = pd.Series(close_arr).pct_change().shift(-1).fillna(0).values
+        strategy_returns = signals * pct_change
+        
+        total_return = np.sum(strategy_returns)
+        win_rate = np.mean(strategy_returns > 0)
+        fitness = (total_return * 100) + (win_rate * 50)
+        return fitness, total_return
+
+    def optimize(self):
+        log("🧠 Genetik Algoritma Başlatılıyor (Web Mode)...")
+        import random
+        
+        population_size = 15
+        generations = 5
+        
+        population = []
+        for _ in range(population_size):
+            population.append({
+                'st_period': random.randint(7, 30),
+                'st_mult': round(random.uniform(1.5, 5.0), 1),
+                'ce_length': random.randint(10, 30),
+                'rsi_len': random.randint(7, 25)
+            })
+            
+        best_dna = population[0]
+        best_fit = -9999
+        
+        for gen in range(generations):
+            scores = []
+            for dna in population:
+                fit, _ = self.evaluate(dna)
+                scores.append((dna, fit))
+            
+            scores.sort(key=lambda x: x[1], reverse=True)
+            best_dna, best_fit = scores[0]
+            
+            log(f"🚀 Gen {gen+1}/{generations} | Skor: {best_fit:.2f}")
+            
+            next_gen = [x[0] for x in scores[:5]]
+            while len(next_gen) < population_size:
+                p1 = random.choice(scores[:5])[0]
+                child = p1.copy()
+                if random.random() < 0.3:
+                    child['st_period'] = max(5, child['st_period'] + random.choice([-2, 2]))
+                next_gen.append(child)
+            population = next_gen
+            
+        self.best_params = best_dna
+        log(f"💎 Optimum Parametreler: {best_dna}")
+        return best_dna
+
+    def get_final_signal(self):
+        p = self.best_params
+        h = self.df['High']
+        l = self.df['Low']
+        c = self.df['Close']
+        
+        st_trend, _ = calculate_supertrend(h, l, c, int(p['st_period']), p['st_mult'])
+        ce_dir = calculate_chandelier(h, l, c, int(p['ce_length']), 3.0)
+        rsi = calculate_rsi(c, int(p['rsi_len']))
+        
+        last_st = st_trend[-1]
+        last_ce = ce_dir[-1]
+        if isinstance(last_ce, (pd.Series, np.ndarray)):
+            last_ce = last_ce[-1] if len(np.shape(last_ce)) > 0 else last_ce
+            
+        last_rsi = rsi[-1]
+        current_price = c.iloc[-1]
+        
+        signal = "NÖTR"
+        css_class = "signal-neutral"
+        
+        if last_st == 1 and last_ce == 1 and last_rsi > 50:
+            signal = "GÜÇLÜ AL (STRONG BUY)"
+            css_class = "signal-buy"
+        elif last_st == -1 and last_ce == -1 and last_rsi < 50:
+            signal = "GÜÇLÜ SAT (STRONG SELL)"
+            css_class = "signal-sell"
+            
+        return {
+            'signal': signal,
+            'css_class': css_class,
+            'price': current_price,
+            'st': 'YUKARI' if last_st == 1 else 'AŞAĞI',
+            'ce': 'YUKARI' if last_ce == 1 else 'AŞAĞI',
+            'rsi': round(last_rsi, 2)
+        }
+
+# Bu fonksiyon artık 'event' parametresi alıyor
+async def start_analysis_event(event):
+    symbol_input = js.document.getElementById("symbol_input").value
+    btn = js.document.getElementById("run_btn")
+    loader = js.document.getElementById("loader")
+    
+    js.document.getElementById("console-output").innerHTML = ""
+    btn.disabled = True
+    loader.style.display = "inline-block"
+    
+    symbol = symbol_input.strip().upper()
+    if not symbol: symbol = "THYAO.IS"
+        
+    log(f"Süreç başlatılıyor: {symbol}")
+    
+    df = await fetch_stock_data(symbol)
+    
+    if df is not None and not df.empty:
+        strategy = WebStrategy(df)
+        best_dna = strategy.optimize()
+        result = strategy.get_final_signal()
+        
+        js.document.getElementById("final-signal").innerHTML = result['signal']
+        js.document.getElementById("final-signal").className = f"signal-badge {result['css_class']}"
+        js.document.getElementById("current-price").innerHTML = f"{result['price']:.2f}"
+        js.document.getElementById("st-val").innerHTML = result['st']
+        js.document.getElementById("ce-val").innerHTML = result['ce']
+        js.document.getElementById("rsi-val").innerHTML = str(result['rsi'])
+        js.document.getElementById("fit-val").innerHTML = "High Confidence"
+        js.document.getElementById("last-update").innerHTML = "Az önce güncellendi"
+    else:
+        log("İşlem başarısız.")
+        
+    btn.disabled = False
+    loader.style.display = "none"
+
+# ==============================================================================
+# EVENT LISTENER SETUP (GÜVENLİ YÖNTEM)
+# ==============================================================================
+def setup_events():
+    # Python fonksiyonunu JS'e tanıt
+    run_proxy = create_proxy(start_analysis_event)
+    
+    # HTML butonunu bul
+    btn = js.document.getElementById("run_btn")
+    
+    # Click olayını bağla
+    btn.addEventListener("click", run_proxy)
+    
+    # Kullanıcıya hazır olduğunu bildir
+    log("✅ Sistem tamamen yüklendi ve hazır.")
+
+# Setup fonksiyonunu çalıştır
+setup_events()
+
+    </py-script>
+</body>
+</html>
