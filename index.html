@@ -3,411 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Algorithmic Trading - GitHub Edition</title>
+    <title>Institutional Trading Engine - Web Edition</title>
     
     <link rel="stylesheet" href="https://pyscript.net/releases/2023.05.1/pyscript.css" />
     <script defer src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-blue: #3b82f6;
-            --border: #334155;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1000px;
-            width: 100%;
-        }
-
-        /* Header */
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-        header p { color: var(--text-muted); }
-
-        /* Controls */
-        .controls {
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            display: flex;
-            gap: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-        }
-
-        input {
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            flex-grow: 1;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        button {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        button:hover { background: #2563eb; transform: translateY(-2px); }
-        button:disabled { background: var(--text-muted); cursor: not-allowed; }
-
-        /* Grid Layout */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard { grid-template-columns: 1fr; }
-            .controls { flex-direction: column; }
-        }
-
-        /* Cards */
-        .card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            padding: 25px;
-            height: fit-content;
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Terminal/Log Output */
-        #console-output {
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            color: #10b981;
-            height: 400px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            line-height: 1.4;
-        }
-        
-        /* Result Highlights */
-        .result-box {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-        .price-display {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 10px 0;
-        }
-        .signal-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-        .signal-buy { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
-        .signal-sell { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
-        .signal-neutral { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
-
-        .metric-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-        }
-
-        /* Loading Spinner */
-        #loader {
-            display: none;
-            margin-left: 10px;
-        }
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { background-color: #1e293b; border: 1px solid #334155; }
+        .btn-primary { background-color: #3b82f6; border: none; }
+        .btn-primary:hover { background-color: #2563eb; }
+        pre { background-color: #000; color: #0f0; padding: 15px; border-radius: 5px; max-height: 400px; overflow-y: auto; font-size: 12px; }
+        .loading { display: none; color: #3b82f6; }
+        .metric-box { background: #334155; padding: 10px; border-radius: 8px; text-align: center; }
+        .metric-title { font-size: 0.8rem; color: #94a3b8; }
+        .metric-value { font-size: 1.2rem; font-weight: bold; }
     </style>
-    
+
     <py-config>
-        packages = ["pandas", "numpy", "pyodide-http"]
+        packages = ["pandas", "numpy", "matplotlib"]
     </py-config>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-robot"></i> AI Trade Engine</h1>
-            <p>Institutional Grade Analysis & Genetic Optimization</p>
-        </header>
-
-        <div class="controls">
-            <input type="text" id="symbol_input" placeholder="Hisse Kodu (Örn: THYAO.IS, AAPL, GARAN.IS)" value="THYAO.IS">
-            <button id="run_btn">
-                <i class="fas fa-play"></i> ANALİZİ BAŞLAT
-                <div id="loader" class="spinner"></div>
-            </button>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1><i class="fas fa-chart-line text-primary"></i> Institutional AI Trader</h1>
+            <p class="text-muted">Gelişmiş Algoritmik Strateji Motoru (WebAssembly Edition)</p>
         </div>
+    </div>
 
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-terminal"></i> SİSTEM LOGLARI
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-lg mb-3">
+                <div class="card-header fw-bold"><i class="fas fa-cogs"></i> Ayarlar</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Hisse Sembolü (Yahoo Finance)</label>
+                        <input type="text" id="symbol_input" class="form-control" value="THYAO.IS" placeholder="Örn: AAPL, BTC-USD, THYAO.IS">
+                        <small class="text-muted">Not: '.IS' uzantısı BIST için gereklidir.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Periyot</label>
+                        <select id="interval_input" class="form-select">
+                            <option value="60m">1 Saatlik</option>
+                            <option value="90m">90 Dakikalık</option>
+                            <option value="1d">Günlük</option>
+                        </select>
+                    </div>
+                    <button id="run_btn" class="btn btn-primary w-100" py-click="main_process()">
+                        <i class="fas fa-play"></i> Analizi Başlat
+                    </button>
+                    <div id="loading_spinner" class="loading mt-3 text-center">
+                        <i class="fas fa-spinner fa-spin fa-2x"></i><br>Yapay Zeka Çalışıyor...
+                    </div>
                 </div>
-                <div id="console-output">Sistem hazır. Python motoru yükleniyor...</div>
             </div>
 
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-chart-line"></i> AI KARARI
+            <div class="card shadow-lg">
+                <div class="card-header fw-bold"><i class="fas fa-flag-checkered"></i> AI Kararı</div>
+                <div class="card-body text-center">
+                    <h2 id="final_decision" class="display-6">--</h2>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <div class="metric-box">
+                                <div class="metric-title">Stop Loss</div>
+                                <div id="stop_loss_disp" class="metric-value text-danger">--</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="metric-box">
+                                <div class="metric-title">Take Profit</div>
+                                <div id="take_profit_disp" class="metric-value text-success">--</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="result-box">
-                    <div id="final-signal" class="signal-badge signal-neutral">BEKLENİYOR</div>
-                    <div id="current-price" class="price-display">--.--</div>
-                    <small id="last-update" style="color: var(--text-muted)">Veri yok</small>
-                </div>
+            </div>
+        </div>
 
-                <div id="details-panel">
-                    <div class="metric-row">
-                        <span>SuperTrend:</span>
-                        <span id="st-val">--</span>
-                    </div>
-                    <div class="metric-row">
-                        <span>Chandelier:</span>
-                        <span id="ce-val">--</span>
-                    </div>
-                    <div class="metric-row">
-                        <span>RSI (Wilder):</span>
-                        <span id="rsi-val">--</span>
-                    </div>
-                    <hr style="border-color: var(--border); opacity: 0.3;">
-                    <div class="metric-row">
-                        <span>AI Güven Skoru (Fit):</span>
-                        <span id="fit-val" style="color: var(--accent-blue)">--</span>
-                    </div>
+        <div class="col-md-8">
+            <div class="card shadow-lg mb-3">
+                <div class="card-header fw-bold"><i class="fas fa-terminal"></i> Sistem Logları</div>
+                <div class="card-body p-0">
+                    <pre id="log_output">Sistem hazır. Analizi başlatmak için butona basın...</pre>
+                </div>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-header fw-bold"><i class="fas fa-chart-area"></i> Backtest Sonuçları (Equity Curve)</div>
+                <div class="card-body">
+                    <div id="chart_area"></div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <py-script>
-import asyncio
-import js
+<py-script>
 import pandas as pd
 import numpy as np
-import pyodide_http
+import random
 import json
 from pyodide.http import open_url
-from js import console
-# Yeni import: Python fonksiyonunu JS eventine bağlamak için gerekli
-from pyodide.ffi import create_proxy
-
-# Patch requests for browser
-pyodide_http.patch_all()
+import matplotlib.pyplot as plt
+from js import document, console
 
 # ==============================================================================
-# BROWSER COMPATIBLE MATH ENGINE
+# 1. SAF NUMPY MATEMATİK MOTORU (Numba yerine Optimize Edilmiş NumPy)
 # ==============================================================================
 
 def log(message):
-    """HTML konsoluna yazar"""
-    console_elem = js.document.getElementById("console-output")
-    console_elem.innerHTML += f"> {message}<br>"
-    console_elem.scrollTop = console_elem.scrollHeight
+    """HTML'deki log alanına yazı yazar"""
+    log_el = document.getElementById("log_output")
+    current_text = log_el.innerHTML
+    log_el.innerHTML = current_text + "\n" + message
+    log_el.scrollTop = log_el.scrollHeight
 
-def calculate_supertrend(high, low, close, period, multiplier):
+def calculate_supertrend_numpy(high, low, close, period, multiplier):
     m = len(close)
-    tr1 = pd.DataFrame(high - low)
-    tr2 = pd.DataFrame(abs(high - pd.Series(close).shift(1)))
-    tr3 = pd.DataFrame(abs(low - pd.Series(close).shift(1)))
-    frames = [tr1, tr2, tr3]
-    tr = pd.concat(frames, axis=1, join='inner').max(axis=1)
-    atr = tr.ewm(alpha=1/period, adjust=False).mean()
     
+    # ATR Hesaplama
+    tr1 = high - low
+    tr2 = np.abs(high - np.roll(close, 1))
+    tr3 = np.abs(low - np.roll(close, 1))
+    tr = np.maximum(tr1, np.maximum(tr2, tr3))
+    tr[0] = tr[1] # İlk değeri düzelt
+    
+    # Wilder's Smoothing for ATR
+    atr = np.zeros(m)
+    atr[period-1] = np.mean(tr[:period])
+    for i in range(period, m):
+        atr[i] = (atr[i-1] * (period - 1) + tr[i]) / period
+
+    # Basic Bands
     hl2 = (high + low) / 2
     basic_upper = hl2 + (multiplier * atr)
     basic_lower = hl2 - (multiplier * atr)
     
-    final_upper = basic_upper.copy()
-    final_lower = basic_lower.copy()
+    final_upper = np.zeros(m)
+    final_lower = np.zeros(m)
     trend = np.zeros(m)
     
-    f_upper = final_upper.values
-    f_lower = final_lower.values
-    c = close.values
-    b_upper = basic_upper.values
-    b_lower = basic_lower.values
-    
-    trend[period-1] = 1
-    
-    for i in range(period, m):
-        if b_upper[i] < f_upper[i-1] or c[i-1] > f_upper[i-1]:
-            f_upper[i] = b_upper[i]
+    # SuperTrend Logic Loop (Vektörize edilmesi zor, döngü kullanıyoruz ama tarayıcı için hızlı)
+    for i in range(1, m):
+        if basic_upper[i] < final_upper[i-1] or close[i-1] > final_upper[i-1]:
+            final_upper[i] = basic_upper[i]
         else:
-            f_upper[i] = f_upper[i-1]
+            final_upper[i] = final_upper[i-1]
             
-        if b_lower[i] > f_lower[i-1] or c[i-1] < f_lower[i-1]:
-            f_lower[i] = b_lower[i]
+        if basic_lower[i] > final_lower[i-1] or close[i-1] < final_lower[i-1]:
+            final_lower[i] = basic_lower[i]
         else:
-            f_lower[i] = f_lower[i-1]
+            final_lower[i] = final_lower[i-1]
             
         if trend[i-1] == 1:
-            if c[i] < f_lower[i-1]:
+            if close[i] < final_lower[i-1]:
                 trend[i] = -1
             else:
                 trend[i] = 1
-        else:
-            if c[i] > f_upper[i-1]:
+        else: # trend was -1
+            if close[i] > final_upper[i-1]:
                 trend[i] = 1
             else:
                 trend[i] = -1
                 
-    return trend, atr.values
+    return trend, final_upper, final_lower, atr
 
-def calculate_chandelier(high, low, close, length, mult):
-    high_s = pd.Series(high)
-    low_s = pd.Series(low)
-    close_s = pd.Series(close)
+def calculate_chandelier_numpy(high, low, close, length, mult):
+    m = len(close)
     
-    tr1 = high_s - low_s
-    tr2 = abs(high_s - close_s.shift(1))
-    tr3 = abs(low_s - close_s.shift(1))
-    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
-    atr = tr.ewm(alpha=1/length, adjust=False).mean()
+    # ATR
+    tr1 = high - low
+    tr2 = np.abs(high - np.roll(close, 1))
+    tr3 = np.abs(low - np.roll(close, 1))
+    tr = np.maximum(tr1, np.maximum(tr2, tr3))
     
-    highest_high = high_s.rolling(window=length).max()
-    lowest_low = low_s.rolling(window=length).min()
+    atr = np.zeros(m)
+    atr[length-1] = np.mean(tr[:length])
+    alpha = 1.0 / length
+    for i in range(length, m):
+        atr[i] = (tr[i] * alpha) + (atr[i-1] * (1 - alpha))
+        
+    direction = np.zeros(m)
+    long_stop = np.zeros(m)
+    short_stop = np.zeros(m)
     
-    long_stop = highest_high - (atr * mult)
-    short_stop = lowest_low + (atr * mult)
-    
-    direction = np.where(close_s > short_stop.shift(1), 1, 
-                np.where(close_s < long_stop.shift(1), -1, 0))
+    for i in range(length, m):
+        window_c = close[i-length+1:i+1]
+        highest = np.max(window_c)
+        lowest = np.min(window_c)
+        
+        ls_raw = highest - (atr[i] * mult)
+        ss_raw = lowest + (atr[i] * mult)
+        
+        if close[i-1] > long_stop[i-1]:
+            long_stop[i] = max(ls_raw, long_stop[i-1])
+        else:
+            long_stop[i] = ls_raw
+            
+        if close[i-1] < short_stop[i-1]:
+            short_stop[i] = min(ss_raw, short_stop[i-1])
+        else:
+            short_stop[i] = ss_raw
+            
+        if close[i] > short_stop[i-1]:
+            direction[i] = 1
+        elif close[i] < long_stop[i-1]:
+            direction[i] = -1
+        else:
+            direction[i] = direction[i-1]
+            
     return direction
 
-def calculate_rsi(close, period):
-    delta = pd.Series(close).diff()
-    gain = (delta.where(delta > 0, 0)).fillna(0)
-    loss = (-delta.where(delta < 0, 0)).fillna(0)
+def calculate_rsi_numpy(close, period):
+    delta = np.diff(close)
+    gain = np.where(delta > 0, delta, 0)
+    loss = np.where(delta < 0, -delta, 0)
     
-    avg_gain = gain.ewm(alpha=1/period, adjust=False).mean()
-    avg_loss = loss.ewm(alpha=1/period, adjust=False).mean()
+    avg_gain = np.zeros_like(close)
+    avg_loss = np.zeros_like(close)
     
-    rs = avg_gain / avg_loss
+    avg_gain[period] = np.mean(gain[:period])
+    avg_loss[period] = np.mean(loss[:period])
+    
+    for i in range(period + 1, len(close)):
+        avg_gain[i] = (avg_gain[i-1] * (period - 1) + gain[i-1]) / period
+        avg_loss[i] = (avg_loss[i-1] * (period - 1) + loss[i-1]) / period
+        
+    rs = avg_gain / (avg_loss + 1e-10)
     rsi = 100 - (100 / (1 + rs))
-    return rsi.values
+    return rsi
+
+def backtest_logic(close, st_trend, ce_dir, rsi_val):
+    commission = 0.002
+    initial_capital = 100000
+    cash = initial_capital
+    position = 0 # 0, 1, -1
+    entry_price = 0
+    equity = []
+    
+    trades = 0
+    wins = 0
+    
+    for i in range(len(close)):
+        # Signal
+        signal = 0
+        rsi_conf = 1 if rsi_val[i] > 50 else -1
+        
+        if st_trend[i] == 1 and ce_dir[i] == 1 and rsi_conf == 1:
+            signal = 1
+        elif st_trend[i] == -1 and ce_dir[i] == -1 and rsi_conf == -1:
+            signal = -1
+            
+        # Execute
+        current_price = close[i]
+        
+        if position != signal and signal != 0:
+            # Close existing
+            if position != 0:
+                pnl = (current_price - entry_price) / entry_price if position == 1 else (entry_price - current_price) / entry_price
+                pnl -= commission
+                cash = cash * (1 + pnl)
+                trades += 1
+                if pnl > 0: wins += 1
+            
+            # Open new
+            position = signal
+            entry_price = current_price
+            cash = cash * (1 - commission)
+            
+        # Calc Equity
+        current_eq = cash
+        if position != 0:
+            unrealized = (current_price - entry_price) / entry_price if position == 1 else (entry_price - current_price) / entry_price
+            current_eq = cash * (1 + unrealized)
+            
+        equity.append(current_eq)
+        
+    return np.array(equity), trades, wins
 
 # ==============================================================================
-# DATA FETCHER (PROXY REQUIRED FOR BROWSER)
+# 2. VERİ ÇEKME (CORS PROXY İLE)
 # ==============================================================================
-async def fetch_stock_data(symbol):
-    log(f"📡 Veri indiriliyor: {symbol}")
+
+async def fetch_data_proxy(symbol, interval):
+    """
+    Yahoo Finance verisini CORS proxy üzerinden çeker.
+    GitHub.io statik bir site olduğu için bu yöntem gereklidir.
+    """
+    # Yahoo Finance API v8 URL
+    base_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval={interval}&range=3mo"
+    # CORS Proxy (Halka açık bir proxy kullanıyoruz, prod için kendi proxy'niz önerilir)
+    proxy_url = f"https://api.allorigins.win/get?url={base_url}"
     
-    import time
-    import json
-    
-    # Zaman aralığı (Son 30 gün)
-    period2 = int(time.time())
-    period1 = period2 - (60 * 60 * 24 * 30) 
-    
-    # YÖNTEM 1: Corsproxy.io (Daha kararlı)
-    # Yahoo Finance API v8 endpoint
-    target_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1={period1}&period2={period2}&interval=60m&includePrePost=false&events=div%7Csplit"
-    
-    # Proxy servisi üzerinden istek
-    # Not: encodeURIComponent benzeri bir işlem gerekebilir, ancak basit URL'lerde doğrudan çalışır.
-    proxy_url = f"https://corsproxy.io/?{target_url}"
-    
-    log(f"ℹ️ Bağlanılıyor: Yahoo Finance (via Secure Proxy)...")
+    log(f"🌍 Veri İndiriliyor: {symbol}...")
     
     try:
-        # Pyodide fetch kullanımı
-        response = await js.fetch(proxy_url)
+        response = await open_url(proxy_url)
+        data = json.loads(response.read())
         
-        if not response.ok:
-            log(f"⚠️ HTTP Hatası: {response.status}")
-            # Alternatif Proxy Denemesi (Yedek Plan)
-            log("🔄 Yedek proxy deneniyor...")
-            fallback_url = f"https://api.allorigins.win/raw?url={target_url}"
-            response = await js.fetch(fallback_url)
+        # AllOrigins JSON yapısını çözümle
+        contents = json.loads(data['contents'])
         
-        if not response.ok:
-            raise Exception(f"Sunucu yanıt vermedi: {response.status}")
-
-        data_json = await response.json()
-        
-        # Yahoo Finance JSON yapısını ayrıştır
-        # Bazen 'chart' anahtarı en üstte olur
-        if "chart" not in data_json:
-             # allorigins bazen string döndürür, parse etmek gerekebilir
-             if isinstance(data_json, str):
-                 data_json = json.loads(data_json)
-        
-        if "chart" not in data_json or "result" not in data_json["chart"] or not data_json["chart"]["result"]:
-            log("❌ Veri boş veya sembol hatalı (Örn: THYAO.IS).")
+        if contents['chart']['error']:
+            log("❌ HATA: Yahoo API hata döndürdü.")
             return None
             
-        result = data_json["chart"]["result"][0]
-        timestamps = result["timestamp"]
-        indicators = result["indicators"]["quote"][0]
+        result = contents['chart']['result'][0]
+        timestamps = result['timestamp']
+        indicators = result['indicators']['quote'][0]
         
-        # DataFrame oluştur
         df = pd.DataFrame({
             'Open': indicators['open'],
             'High': indicators['high'],
@@ -415,190 +325,134 @@ async def fetch_stock_data(symbol):
             'Close': indicators['close']
         })
         
-        # Datetime index (Saniye cinsinden)
-        df.index = pd.to_datetime(timestamps, unit='s')
-        
-        # Eksik verileri temizle
+        # Temizlik
         df = df.dropna()
-        
-        log(f"✅ {len(df)} bar veri alındı ve işlendi.")
+        log(f"✅ Başarılı: {len(df)} mum verisi alındı.")
         return df
         
     except Exception as e:
-        log(f"❌ Kritik Hata: {str(e)}")
-        log("💡 İpucu: Tarayıcı reklam engelleyicinizi kapatmayı deneyin.")
+        log(f"❌ BAĞLANTI HATASI: {str(e)}")
+        log("⚠️ Not: CORS Proxy bazen yoğunluktan yanıt vermeyebilir.")
         return None
 
 # ==============================================================================
-# OPTIMIZATION & SIGNAL ENGINE
+# 3. ANA İŞLEM FONKSİYONU
 # ==============================================================================
-class WebStrategy:
-    def __init__(self, df):
-        self.df = df
-        self.best_params = {}
-        
-    def evaluate(self, params):
-        h = self.df['High']
-        l = self.df['Low']
-        c = self.df['Close']
-        
-        st_trend, _ = calculate_supertrend(h, l, c, int(params['st_period']), params['st_mult'])
-        ce_dir = calculate_chandelier(h, l, c, int(params['ce_length']), 3.0)
-        rsi = calculate_rsi(c, int(params['rsi_len']))
-        
-        st_trend = np.array(st_trend)
-        ce_dir = np.array(ce_dir)
-        rsi = np.array(rsi)
-        close_arr = c.values
-        
-        signals = np.zeros(len(c))
-        long_cond = (st_trend == 1) & (ce_dir == 1) & (rsi > 50)
-        signals[long_cond] = 1
-        
-        pct_change = pd.Series(close_arr).pct_change().shift(-1).fillna(0).values
-        strategy_returns = signals * pct_change
-        
-        total_return = np.sum(strategy_returns)
-        win_rate = np.mean(strategy_returns > 0)
-        fitness = (total_return * 100) + (win_rate * 50)
-        return fitness, total_return
 
-    def optimize(self):
-        log("🧠 Genetik Algoritma Başlatılıyor (Web Mode)...")
-        import random
-        
-        population_size = 15
-        generations = 5
-        
-        population = []
-        for _ in range(population_size):
-            population.append({
-                'st_period': random.randint(7, 30),
-                'st_mult': round(random.uniform(1.5, 5.0), 1),
-                'ce_length': random.randint(10, 30),
-                'rsi_len': random.randint(7, 25)
-            })
-            
-        best_dna = population[0]
-        best_fit = -9999
-        
-        for gen in range(generations):
-            scores = []
-            for dna in population:
-                fit, _ = self.evaluate(dna)
-                scores.append((dna, fit))
-            
-            scores.sort(key=lambda x: x[1], reverse=True)
-            best_dna, best_fit = scores[0]
-            
-            log(f"🚀 Gen {gen+1}/{generations} | Skor: {best_fit:.2f}")
-            
-            next_gen = [x[0] for x in scores[:5]]
-            while len(next_gen) < population_size:
-                p1 = random.choice(scores[:5])[0]
-                child = p1.copy()
-                if random.random() < 0.3:
-                    child['st_period'] = max(5, child['st_period'] + random.choice([-2, 2]))
-                next_gen.append(child)
-            population = next_gen
-            
-        self.best_params = best_dna
-        log(f"💎 Optimum Parametreler: {best_dna}")
-        return best_dna
+async def main_process(*args, **kwargs):
+    # UI Elemanları
+    document.getElementById("loading_spinner").style.display = "block"
+    document.getElementById("log_output").innerHTML = ""
+    
+    symbol = document.getElementById("symbol_input").value
+    interval = document.getElementById("interval_input").value
+    
+    # 1. Veri Çek
+    df = await fetch_data_proxy(symbol, interval)
+    
+    if df is None:
+        document.getElementById("loading_spinner").style.display = "none"
+        return
 
-    def get_final_signal(self):
-        p = self.best_params
-        h = self.df['High']
-        l = self.df['Low']
-        c = self.df['Close']
-        
-        st_trend, _ = calculate_supertrend(h, l, c, int(p['st_period']), p['st_mult'])
-        ce_dir = calculate_chandelier(h, l, c, int(p['ce_length']), 3.0)
-        rsi = calculate_rsi(c, int(p['rsi_len']))
-        
-        last_st = st_trend[-1]
-        last_ce = ce_dir[-1]
-        if isinstance(last_ce, (pd.Series, np.ndarray)):
-            last_ce = last_ce[-1] if len(np.shape(last_ce)) > 0 else last_ce
-            
-        last_rsi = rsi[-1]
-        current_price = c.iloc[-1]
-        
-        signal = "NÖTR"
-        css_class = "signal-neutral"
-        
-        if last_st == 1 and last_ce == 1 and last_rsi > 50:
-            signal = "GÜÇLÜ AL (STRONG BUY)"
-            css_class = "signal-buy"
-        elif last_st == -1 and last_ce == -1 and last_rsi < 50:
-            signal = "GÜÇLÜ SAT (STRONG SELL)"
-            css_class = "signal-sell"
-            
-        return {
-            'signal': signal,
-            'css_class': css_class,
-            'price': current_price,
-            'st': 'YUKARI' if last_st == 1 else 'AŞAĞI',
-            'ce': 'YUKARI' if last_ce == 1 else 'AŞAĞI',
-            'rsi': round(last_rsi, 2)
+    # Veriyi Numpy array'e çevir
+    h = df['High'].values
+    l = df['Low'].values
+    c = df['Close'].values
+    
+    # 2. Genetik Algoritma (Basitleştirilmiş - Web Hızı İçin)
+    log("\n🧠 AI Optimizasyonu Başlatılıyor (Mini-Genetic)...")
+    
+    best_score = -99999
+    best_params = {}
+    
+    # Tarayıcıyı dondurmamak için daha az popülasyon
+    population_size = 20 
+    
+    for _ in range(population_size):
+        params = {
+            'st_period': random.randint(7, 30),
+            'st_mult': round(random.uniform(1.5, 4.0), 1),
+            'ce_len': random.randint(10, 30),
+            'rsi_len': random.randint(10, 20)
         }
-
-# Bu fonksiyon artık 'event' parametresi alıyor
-async def start_analysis_event(event):
-    symbol_input = js.document.getElementById("symbol_input").value
-    btn = js.document.getElementById("run_btn")
-    loader = js.document.getElementById("loader")
-    
-    js.document.getElementById("console-output").innerHTML = ""
-    btn.disabled = True
-    loader.style.display = "inline-block"
-    
-    symbol = symbol_input.strip().upper()
-    if not symbol: symbol = "THYAO.IS"
         
-    log(f"Süreç başlatılıyor: {symbol}")
-    
-    df = await fetch_stock_data(symbol)
-    
-    if df is not None and not df.empty:
-        strategy = WebStrategy(df)
-        best_dna = strategy.optimize()
-        result = strategy.get_final_signal()
+        # Hesapla
+        st_trend, _, _, _ = calculate_supertrend_numpy(h, l, c, params['st_period'], params['st_mult'])
+        ce_dir = calculate_chandelier_numpy(h, l, c, params['ce_len'], 3.0)
+        rsi_val = calculate_rsi_numpy(c, params['rsi_len'])
         
-        js.document.getElementById("final-signal").innerHTML = result['signal']
-        js.document.getElementById("final-signal").className = f"signal-badge {result['css_class']}"
-        js.document.getElementById("current-price").innerHTML = f"{result['price']:.2f}"
-        js.document.getElementById("st-val").innerHTML = result['st']
-        js.document.getElementById("ce-val").innerHTML = result['ce']
-        js.document.getElementById("rsi-val").innerHTML = str(result['rsi'])
-        js.document.getElementById("fit-val").innerHTML = "High Confidence"
-        js.document.getElementById("last-update").innerHTML = "Az önce güncellendi"
+        equity, trades, wins = backtest_logic(c, st_trend, ce_dir, rsi_val)
+        
+        if trades < 3: score = -999
+        else:
+            ret = (equity[-1] - 100000) / 100000
+            wr = wins / trades
+            score = ret * wr
+            
+        if score > best_score:
+            best_score = score
+            best_params = params
+            
+    log(f"💎 En İyi Parametreler Bulundu: {best_params}")
+    
+    # 3. Final Hesaplama & Grafik
+    p = best_params
+    st_trend, final_upper, final_lower, atr = calculate_supertrend_numpy(h, l, c, p['st_period'], p['st_mult'])
+    ce_dir = calculate_chandelier_numpy(h, l, c, p['ce_len'], 3.0)
+    rsi_val = calculate_rsi_numpy(c, p['rsi_len'])
+    
+    equity, trades, wins = backtest_logic(c, st_trend, ce_dir, rsi_val)
+    
+    # 4. Grafik Çizimi
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(equity, color='#3b82f6', linewidth=2)
+    ax.set_title(f"Sermaye Eğrisi ({symbol}) - Getiri: %{((equity[-1]-100000)/100000)*100:.2f}", color='white')
+    ax.set_facecolor('#1e293b')
+    fig.patch.set_facecolor('#1e293b')
+    ax.tick_params(colors='white')
+    ax.spines['bottom'].set_color('white')
+    ax.spines['left'].set_color('white')
+    
+    # Grafiği HTML'e bas
+    document.getElementById("chart_area").innerHTML = ""
+    display(fig, target="chart_area", append=False)
+    
+    # 5. Sinyal Kararı
+    last_st = st_trend[-1]
+    last_ce = ce_dir[-1]
+    last_rsi = rsi_val[-1]
+    last_price = c[-1]
+    last_atr = atr[-1]
+    
+    decision_text = "NÖTR / BEKLE"
+    decision_color = "text-warning"
+    
+    if last_st == 1 and last_ce == 1 and last_rsi > 50:
+        decision_text = "GÜÇLÜ AL (LONG) 🚀"
+        decision_color = "text-success"
+        sl = last_price - (last_atr * 2)
+        tp = last_price + (last_atr * 4)
+    elif last_st == -1 and last_ce == -1 and last_rsi < 50:
+        decision_text = "GÜÇLÜ SAT (SHORT) 📉"
+        decision_color = "text-danger"
+        sl = last_price + (last_atr * 2)
+        tp = last_price - (last_atr * 4)
     else:
-        log("İşlem başarısız.")
+        sl = 0
+        tp = 0
         
-    btn.disabled = False
-    loader.style.display = "none"
-
-# ==============================================================================
-# EVENT LISTENER SETUP (GÜVENLİ YÖNTEM)
-# ==============================================================================
-def setup_events():
-    # Python fonksiyonunu JS'e tanıt
-    run_proxy = create_proxy(start_analysis_event)
+    # UI Güncelle
+    dec_el = document.getElementById("final_decision")
+    dec_el.innerHTML = decision_text
+    dec_el.className = f"display-6 fw-bold {decision_color}"
     
-    # HTML butonunu bul
-    btn = js.document.getElementById("run_btn")
+    document.getElementById("stop_loss_disp").innerHTML = f"{sl:.2f}"
+    document.getElementById("take_profit_disp").innerHTML = f"{tp:.2f}"
     
-    # Click olayını bağla
-    btn.addEventListener("click", run_proxy)
-    
-    # Kullanıcıya hazır olduğunu bildir
-    log("✅ Sistem tamamen yüklendi ve hazır.")
+    log("\n✅ İŞLEM TAMAMLANDI.")
+    document.getElementById("loading_spinner").style.display = "none"
 
-# Setup fonksiyonunu çalıştır
-setup_events()
+</py-script>
 
-    </py-script>
 </body>
 </html>
-
