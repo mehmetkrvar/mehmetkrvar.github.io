@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- İÇE GÖMÜLÜ SVG FAVICON (Dışarıdan yüklenmez, anında açılır, sayfa yenileme sorunu yapmaz) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23635bff'%3E%3Crect x='3' y='4' width='3' height='16' rx='1'/%3E%3Crect x='8' y='4' width='5' height='16' rx='1'/%3E%3Crect x='15' y='4' width='2' height='16' rx='1'/%3E%3Crect x='19' y='4' width='2' height='16' rx='1'/%3E%3C/svg%3E" type="image/svg+xml">
+    
+    <title>KarVARCODE - Akıllı Barkod Sistemi</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-color: #f8fafc;
+            --surface: rgba(255, 255, 255, 0.7);
+            --surface-solid: #ffffff;
+            --primary: #635bff; 
+            --primary-hover: #0071e3; 
+            --text-main: #0f172a;
+            --text-light: #64748b;
+            --border: rgba(255, 255, 255, 0.6);
+            --border-solid: #e2e8f0;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 20px 40px -10px rgba(99, 91, 255, 0.1);
+            --shadow-hover: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            --glass-blur: blur(20px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        /* --- AMBIENT BACKGROUND BLOBS --- */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.4;
+            border-radius: 50%;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        .blob-1 {
+            top: -10%; left: -10%;
+            width: 500px; height: 500px;
+            background: #e0c3fc;
+        }
+        .blob-2 {
+            bottom: -20%; right: -10%;
+            width: 600px; height: 600px;
+            background: #8ec5fc;
+            animation-delay: -5s;
+        }
+        .blob-3 {
+            top: 40%; left: 50%;
+            width: 400px; height: 400px;
+            background: #e0c3fc;
+            opacity: 0.2;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeDown 0.8s ease-out forwards;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -1.5px;
+            color: var(--text-main);
+        }
+
+        .header h1 span {
+            background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.15rem;
+            font-weight: 400;
+            letter-spacing: -0.2px;
+        }
+
+        /* --- CONTROLS (GLASSMORPHISM) --- */
+        .controls-wrapper {
+            background: var(--surface);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            border: 1px solid var(--border);
+            animation: fadeUp 0.8s ease-out forwards;
+        }
+
+        @media (max-width: 768px) {
+            .controls-wrapper { grid-template-columns: 1fr; padding: 25px; }
+            .header h1 { font-size: 2.5rem; }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-wrapper svg {
+            position: absolute;
+            left: 16px;
+            width: 20px;
+            height: 20px;
+            color: var(--text-light);
+            transition: color 0.3s ease;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 20px 16px 48px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-solid);
+            border-radius: 14px;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        input:focus {
+            outline: none;
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 91, 255, 0.15), inset 0 2px 4px rgba(0,0,0,0.01);
+        }
+
+        input:focus + svg, .input-wrapper:focus-within svg {
+            color: var(--primary);
+        }
+
+        /* --- BUTTONS --- */
+        .manual-input-container {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        button {
+            padding: 0 28px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(99, 91, 255, 0.25);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 91, 255, 0.4);
+            filter: brightness(1.05);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* --- RESULTS GRID --- */
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .card {
+            background: var(--surface-solid);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            border: 1px solid var(--border-solid);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUpCard 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: transparent;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card img {
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            margin-bottom: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.08);
+        }
+
+        .card h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .barcode-svg {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+
+        /* --- MANUAL BARCODE CONTAINER --- */
+        #manualBarcodeContainer {
+            text-align: center;
+            background: var(--surface-solid);
+            padding: 40px;
+            border-radius: 24px;
+            margin-bottom: 50px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-solid);
+            display: none;
+            animation: fadeUp 0.4s ease forwards;
+        }
+
+        /* --- MODAL (POP-UP) STYLES --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: var(--surface-solid);
+            padding: 50px;
+            border-radius: 32px;
+            text-align: center;
+            position: relative;
+            max-width: 90%;
+            width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: #ffe4e6;
+            color: #e11d48;
+            transform: rotate(90deg);
+        }
+
+        .close-btn svg { width: 18px; height: 18px; }
+
+        .modal-content img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            margin-bottom: 24px;
+        }
+
+        .modal-content h2 {
+            color: var(--text-main);
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-solid);
+            animation: fadeUp 1s ease forwards;
+        }
+
+        .footer .designer {
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .footer .thanks {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* --- KEYFRAMES --- */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUpCard {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>KarVAR<span>CODE</span></h1>
+            <p>Hızlı, Minimal ve Akıllı Barkod Yönetimi</p>
+        </div>
+
+        <div class="controls-wrapper">
+            <div class="input-group">
+                <label for="searchInput">Akıllı Ürün Arama</label>
+                <div class="input-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Örn: 'kuzeyden 5' veya 'activia'..." autocomplete="off">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="manualInput">Manuel Barkod Üretici</label>
+                <div class="manual-input-container">
+                    <div class="input-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5zM13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5z" />
+                        </svg>
+                        <input type="text" id="manualInput" placeholder="Barkod numarası girin..." autocomplete="off">
+                    </div>
+                    <!-- Sayfa yenilemesini önlemek için type="button" eklendi -->
+                    <button type="button" onclick="generateManualBarcode()">Oluştur</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="manualBarcodeContainer">
+            <h3 style="margin-top:0; color: var(--text-main); font-weight: 600; margin-bottom: 20px;">Üretilen Barkod</h3>
+            <svg id="manualBarcodeSvg"></svg>
+        </div>
+
+        <div class="results" id="resultsGrid"></div>
+
+        <div class="footer">
+            <p class="designer">Bu site Mehmet Karvar tarafından tasarlanmıştır.</p>
+            <p class="thanks">Ahmet Çayan'a desteklerinden ötürü teşekkür ederiz.</p>
+        </div>
+    </div>
+
+    <!-- POP-UP (MODAL) -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="close-btn" onclick="closeModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </div>
+            <img id="modalImg" src="" alt="Ürün Görseli" onerror="this.src='https://via.placeholder.com/200?text=Görsel+Yok'">
+            <h2 id="modalTitle">Ürün Adı</h2>
+            <svg id="modalBarcodeSvg"></svg> 
+        </div>
+    </div>
+
+    <script>
+        let allProducts = [];
+        const resultsGrid = document.getElementById('resultsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const manualBarcodeContainer = document.getElementById('manualBarcodeContainer');
+        const manualInput = document.getElementById('manualInput');
+
+        async function loadData() {
+            try {
+                const response = await fetch('product.json'); 
+                allProducts = await response.json();
+                console.log(allProducts.length + " ürün başarıyla yüklendi.");
+            } catch (error) {
+                console.error("Veri yüklenirken hata oluştu:", error);
+                resultsGrid.innerHTML = `<p style="color:#e11d48; text-align:center; grid-column: 1/-1; padding: 20px; background: #ffe4e6; border-radius: 14px;">Ürün verileri (product.json) yüklenemedi. Dosyanın aynı dizinde olduğundan emin olun.</p>`;
+            }
+        }
+
+        // Arama Alanı Etkileşimi
+        searchInput.addEventListener('input', (e) => {
+            // Arama yapıldığında manuel barkod kutusunu gizle
+            manualBarcodeContainer.style.display = 'none';
+            manualInput.value = '';
+
+            const searchTerm = e.target.value.toLowerCase().trim();
+            
+            if (searchTerm.length === 0) {
+                resultsGrid.innerHTML = '';
+                return;
+            }
+
+            const searchWords = searchTerm.split(/\s+/);
+            const filtered = allProducts.filter(product => {
+                const productName = product.name.toLowerCase();
+                return searchWords.every(word => productName.includes(word));
+            }).slice(0, 50);
+
+            renderProducts(filtered);
+        });
+
+        function renderProducts(products) {
+            resultsGrid.innerHTML = '';
+
+            if(products.length === 0) {
+                resultsGrid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: var(--text-light); padding: 40px; font-weight: 500;">Eşleşen ürün bulunamadı.</p>`;
+                return;
+            }
+
+            products.forEach((product, index) => {
+                if (!product.barcodes || product.barcodes.length === 0) return;
+                const barcodeValue = product.barcodes[0];
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.animationDelay = `${index * 0.05}s`;
+                
+                card.innerHTML = `
+                    <img src="${product.picURL}" alt="Ürün Görseli" onerror="this.src='https://via.placeholder.com/130?text=Görsel+Yok'">
+                    <h3>${product.name}</h3>
+                    <svg class="barcode-svg" id="barcode-${index}"></svg>
+                `;
+                
+                card.addEventListener('click', () => openModal(product, barcodeValue));
+                resultsGrid.appendChild(card);
+
+                setTimeout(() => {
+                    try {
+                        JsBarcode(`#barcode-${index}`, barcodeValue, {
+                            format: "CODE128",
+                            width: 1.8,
+                            height: 45,
+                            displayValue: true,
+                            fontSize: 13,
+                            font: "Inter",
+                            fontOptions: "600",
+                            margin: 0,
+                            lineColor: "#0f172a"
+                        });
+                    } catch (err) {
+                        console.warn("Barkod çizilemedi:", barcodeValue);
+                    }
+                }, 0);
+            });
+        }
+
+        // --- MODAL FONKSİYONLARI ---
+        function openModal(product, barcodeValue) {
+            const modal = document.getElementById('productModal');
+            document.getElementById('modalImg').src = product.picURL;
+            document.getElementById('modalTitle').textContent = product.name;
+            
+            modal.classList.add('active');
+            
+            try {
+                JsBarcode("#modalBarcodeSvg", barcodeValue, {
+                    format: "CODE128",
+                    width: 2.5,
+                    height: 100,
+                    displayValue: true,
+                    fontSize: 18,
+                    font: "Inter",
+                    fontOptions: "600",
+                    lineColor: "#0f172a",
+                    margin: 10
+                });
+            } catch (err) {
+                console.warn("Pop-up barkodu çizilemedi:", barcodeValue);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // --- MANUEL BARKOD ÜRETİCİ ---
+        function generateManualBarcode() {
+            const val = manualInput.value.trim();
+            if (!val) return;
+
+            // Manuel barkod üretildiğinde arama sonuçlarını ve inputunu temizle
+            resultsGrid.innerHTML = '';
+            searchInput.value = '';
+
+            manualBarcodeContainer.style.display = 'block';
+
+            try {
+                JsBarcode("#manualBarcodeSvg", val, {
+                    format: "CODE128",
+                    width: 2.5,
+                    height: 80,
+                    displayValue: true,
+                    fontSize: 18,
+                    font: "Inter",
+                    fontOptions: "600",
+                    lineColor: "#0f172a"
+                });
+            } catch (err) {
+                alert("Geçersiz barkod formatı girdiniz!");
+                manualBarcodeContainer.style.display = 'none';
+            }
+        }
+
+        // Başlangıç
+        loadData();
+    </script>
+</body>
+</html>
