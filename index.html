@@ -434,7 +434,7 @@
         </div>
     </div>
 
-    <!-- POP-UP (MODAL) -->
+    <!-- POP-UP (MODAL) Yükleme hatası giderildi (onerror güncellendi) -->
     <div id="productModal" class="modal">
         <div class="modal-content">
             <div class="close-btn" onclick="closeModal()">
@@ -442,7 +442,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </div>
-            <img id="modalImg" src="" alt="Ürün Görseli" onerror="this.src='https://via.placeholder.com/200?text=Görsel+Yok'">
+            <img id="modalImg" src="" alt="Ürün Görseli" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Görsel+Yok'">
             <h2 id="modalTitle">Ürün Adı</h2>
             <svg id="modalBarcodeSvg"></svg> 
         </div>
@@ -502,8 +502,9 @@
                 card.className = 'card';
                 card.style.animationDelay = `${index * 0.05}s`;
                 
+                // KART İÇİ: Yükleme hatası giderildi (onerror güncellendi)
                 card.innerHTML = `
-                    <img src="${product.picURL}" alt="Ürün Görseli" onerror="this.src='https://via.placeholder.com/130?text=Görsel+Yok'">
+                    <img src="${product.picURL}" alt="Ürün Görseli" onerror="this.onerror=null; this.src='https://via.placeholder.com/130?text=Görsel+Yok'">
                     <h3>${product.name}</h3>
                     <svg class="barcode-svg" id="barcode-${index}"></svg>
                 `;
