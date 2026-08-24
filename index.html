@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- ADSENSE SAHİPLİK DOĞRULAMA ETİKETİ -->
+    <meta name="google-adsense-account" content="ca-pub-3478976143607688">
+    
     <!-- İÇE GÖMÜLÜ SVG FAVICON -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23635bff'%3E%3Crect x='3' y='4' width='3' height='16' rx='1'/%3E%3Crect x='8' y='4' width='5' height='16' rx='1'/%3E%3Crect x='15' y='4' width='2' height='16' rx='1'/%3E%3Crect x='19' y='4' width='2' height='16' rx='1'/%3E%3C/svg%3E" type="image/svg+xml">
     
@@ -89,7 +92,7 @@
             width: 100%;
             max-width: 970px;
             min-height: 90px;
-            margin: 0 auto 40px auto; /* Başlık ile arasına boşluk bırakır */
+            margin: 0 auto 40px auto;
             text-align: center;
             border-radius: 14px;
             overflow: hidden;
@@ -98,26 +101,18 @@
         .ad-sidebar {
             position: fixed;
             top: 120px;
-            width: 160px; /* Genellikle Dikey Gökdelen reklam boyutu */
+            width: 160px;
             height: 600px;
             z-index: 0;
             border-radius: 14px;
             overflow: hidden;
         }
 
-        .ad-sidebar.left {
-            left: 20px;
-        }
+        .ad-sidebar.left { left: 20px; }
+        .ad-sidebar.right { right: 20px; }
 
-        .ad-sidebar.right {
-            right: 20px;
-        }
-
-        /* Ekran 1600px'den küçükse yan reklamları gizle (Tasarımı bozmamak için) */
         @media (max-width: 1600px) {
-            .ad-sidebar {
-                display: none;
-            }
+            .ad-sidebar { display: none; }
         }
 
         /* --- HEADER --- */
@@ -170,36 +165,11 @@
             .header h1 { font-size: 2.5rem; }
         }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .input-group label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-left: 4px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-
-        .input-wrapper svg {
-            position: absolute;
-            left: 16px;
-            width: 20px;
-            height: 20px;
-            color: var(--text-light);
-            transition: color 0.3s ease;
-        }
+        .input-group { display: flex; flex-direction: column; gap: 12px; }
+        .input-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; margin-left: 4px; }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+        .input-wrapper svg { position: absolute; left: 16px; width: 20px; height: 20px; color: var(--text-light); transition: color 0.3s ease; }
 
         input {
             width: 100%;
@@ -215,22 +185,11 @@
         }
 
         input::placeholder { color: #94a3b8; }
-
-        input:focus {
-            outline: none;
-            background: #ffffff;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 91, 255, 0.15), inset 0 2px 4px rgba(0,0,0,0.01);
-        }
-
+        input:focus { outline: none; background: #ffffff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 91, 255, 0.15), inset 0 2px 4px rgba(0,0,0,0.01); }
         input:focus + svg, .input-wrapper:focus-within svg { color: var(--primary); }
 
         /* --- BUTTONS --- */
-        .manual-input-container {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-        }
+        .manual-input-container { display: flex; gap: 12px; width: 100%; }
 
         button {
             padding: 0 28px;
@@ -247,20 +206,11 @@
             box-shadow: 0 4px 12px rgba(99, 91, 255, 0.25);
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 91, 255, 0.4);
-            filter: brightness(1.05);
-        }
-
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 91, 255, 0.4); filter: brightness(1.05); }
         button:active { transform: translateY(1px); }
 
         /* --- RESULTS GRID --- */
-        .results {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 28px;
-        }
+        .results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 28px; }
 
         .card {
             background: var(--surface-solid);
@@ -291,22 +241,9 @@
             transition: opacity 0.3s ease;
         }
 
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-hover);
-            border-color: transparent;
-        }
-
+        .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-hover); border-color: transparent; }
         .card:hover::before { opacity: 1; }
-
-        .card img {
-            width: 130px;
-            height: 130px;
-            object-fit: contain;
-            margin-bottom: 24px;
-            transition: transform 0.3s ease;
-        }
-
+        .card img { width: 130px; height: 130px; object-fit: contain; margin-bottom: 24px; transition: transform 0.3s ease; }
         .card:hover img { transform: scale(1.08); }
 
         .card h3 {
@@ -321,11 +258,7 @@
             overflow: hidden;
         }
 
-        .barcode-svg {
-            max-width: 100%;
-            height: auto;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
-        }
+        .barcode-svg { max-width: 100%; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); }
 
         /* --- MANUAL BARCODE CONTAINER --- */
         #manualBarcodeContainer {
@@ -389,12 +322,7 @@
             transition: all 0.2s ease;
         }
 
-        .close-btn:hover {
-            background: #ffe4e6;
-            color: #e11d48;
-            transform: rotate(90deg);
-        }
-
+        .close-btn:hover { background: #ffe4e6; color: #e11d48; transform: rotate(90deg); }
         .close-btn svg { width: 18px; height: 18px; }
         .modal-content img { width: 180px; height: 180px; object-fit: contain; margin-bottom: 24px; }
         .modal-content h2 { color: var(--text-main); margin-bottom: 30px; font-size: 1.5rem; font-weight: 700; line-height: 1.4; }
@@ -412,18 +340,9 @@
         .footer .thanks { color: var(--text-light); font-size: 0.9rem; }
 
         /* --- KEYFRAMES --- */
-        @keyframes fadeDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeUpCard {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUpCard { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
