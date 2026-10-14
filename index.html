@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KarVARCODE | Akıllı Barkod Merkezi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --ink: #18202f;
+            --muted: #718096;
+            --line: #e7ebf2;
+            --surface: #ffffff;
+            --canvas: #f6f8fc;
+            --blue: #4356e8;
+            --blue-dark: #2d3dc1;
+            --aqua: #23c9b8;
+            --shadow: 0 18px 50px rgba(34, 47, 85, .08);
+            --shadow-sm: 0 8px 24px rgba(34, 47, 85, .08);
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; min-width: 320px; color: var(--ink); background: var(--canvas); font-family: "DM Sans", sans-serif; }
+        button, input { font: inherit; }
+        button { cursor: pointer; }
+        .app-shell { min-height: 100vh; position: relative; overflow: hidden; }
+        .app-shell::before, .app-shell::after { content: ""; position: fixed; z-index: -1; border-radius: 50%; filter: blur(4px); pointer-events: none; }
+        .app-shell::before { width: 460px; height: 460px; top: -220px; right: -120px; background: #dfe5ff; opacity: .75; }
+        .app-shell::after { width: 360px; height: 360px; bottom: -210px; left: -120px; background: #d7f7f3; opacity: .65; }
+        .topbar { height: 78px; display: flex; align-items: center; justify-content: space-between; max-width: 1240px; margin: auto; padding: 0 28px; }
+        .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+        .brand-mark { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 13px; color: white; background: linear-gradient(135deg, var(--blue), #7a5cf4); box-shadow: 0 8px 18px #4356e84d; }
+        .brand-name { font-family: "Space Grotesk", sans-serif; font-size: 20px; letter-spacing: -.04em; font-weight: 700; }
+        .brand-name span { color: var(--blue); }
+        .status-pill { display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: #ffffffaa; font-size: 12px; font-weight: 600; }
+        .topbar-actions { display: flex; align-items: center; gap: 10px; }
+        .category-tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid #dfe3f7; border-radius: 12px; color: var(--blue); background: #f8f9ff; font-size: 12px; font-weight: 700; transition: .2s; }
+        .category-tab:hover, .category-tab.active { color: white; border-color: var(--blue); background: var(--blue); box-shadow: 0 7px 16px #4356e833; transform: translateY(-1px); }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aqua); box-shadow: 0 0 0 4px #23c9b81c; }
+        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 30px; max-width: 1240px; margin: auto; padding: 38px 28px 70px; }
+        #bakeryView { grid-column: 1; }
+        .generator { grid-column: 2; grid-row: 1 / span 2; }
+        .hero { max-width: 700px; padding: 28px 0 34px; }
+        .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--blue); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+        .eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--aqua); }
+        h1, h2, h3, p { margin-top: 0; }
+        h1 { max-width: 650px; margin: 15px 0 12px; font-family: "Space Grotesk", sans-serif; font-size: clamp(36px, 5vw, 62px); line-height: 1.04; letter-spacing: -.065em; }
+        h1 em { color: var(--blue); font-style: normal; }
+        .hero-copy { max-width: 560px; color: var(--muted); font-size: 16px; line-height: 1.7; }
+        .search-box { position: relative; display: flex; align-items: center; max-width: 700px; margin-top: 25px; padding: 7px 8px 7px 18px; border: 1px solid #e1e5f0; border-radius: 17px; background: var(--surface); box-shadow: var(--shadow-sm); transition: .25s ease; }
+        .search-box:focus-within { border-color: #9ca8f5; box-shadow: 0 0 0 5px #4356e817, var(--shadow-sm); transform: translateY(-2px); }
+        .search-box i { color: var(--blue); font-size: 23px; }
+        .search-box input { width: 100%; border: 0; outline: 0; padding: 12px; color: var(--ink); background: transparent; font-size: 15px; }
+        .search-box input::placeholder { color: #a5afc1; }
+        .shortcut { display: flex; align-items: center; gap: 5px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; color: #a0a8b8; font-size: 11px; white-space: nowrap; }
+        .shortcut kbd { font-size: 10px; }
+        .section-head { display: flex; align-items: end; justify-content: space-between; gap: 15px; margin: 16px 0 18px; }
+        .section-head h2 { margin: 0; font-family: "Space Grotesk", sans-serif; font-size: 20px; letter-spacing: -.04em; }
+        .result-count { color: var(--muted); font-size: 13px; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .product-card { overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); box-shadow: 0 6px 20px #22305508; animation: rise .45s both; transition: transform .25s, box-shadow .25s, border-color .25s; cursor: pointer; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+        .product-card:focus-visible { outline: 3px solid #9ca8f5; outline-offset: 4px; border-color: var(--blue); }
+        .product-image { position: relative; height: 220px; display: grid; place-items: center; overflow: hidden; background: linear-gradient(135deg, #f6f8ff, #f2fbfa); }
+        .product-image img { width: 74%; height: 74%; object-fit: contain; transition: transform .4s; }
+        .product-card:hover .product-image img { transform: scale(1.08); }
+        .zoom-hint { position: absolute; right: 13px; top: 13px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: white; background: #18202fcc; opacity: 0; transform: translateY(-5px); transition: .25s; }
+        .product-card:hover .zoom-hint { opacity: 1; transform: translateY(0); }
+        .card-content { padding: 19px; }
+        .product-name { min-height: 45px; margin-bottom: 15px; font-family: "Space Grotesk", sans-serif; font-size: 16px; line-height: 1.4; letter-spacing: -.025em; }
+        .barcode-frame { min-height: 93px; display: grid; place-items: center; padding: 9px; border: 1px solid #edf0f5; border-radius: 13px; background: #fbfcfe; }
+        .barcode-frame svg { width: 100%; max-height: 72px; }
+        .barcode-empty { color: var(--muted); font-size: 12px; }
+        .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 15px; }
+        .barcode-value { color: var(--muted); font-family: monospace; font-size: 11px; }
+        .primary-button, .secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 11px; padding: 11px 14px; font-size: 12px; font-weight: 700; transition: .2s; }
+        .primary-button { color: white; background: var(--blue); box-shadow: 0 7px 15px #4356e833; }
+        .primary-button:hover { background: var(--blue-dark); transform: translateY(-1px); }
+        .secondary-button { color: var(--ink); border: 1px solid var(--line); background: white; }
+        .secondary-button:hover { border-color: #bdc6f9; color: var(--blue); background: #fafbff; }
+        .empty-state { display: grid; place-items: center; min-height: 280px; border: 1px dashed #ccd4e4; border-radius: 22px; color: var(--muted); text-align: center; background: #ffffff91; animation: rise .35s both; }
+        .empty-state i { display: block; margin-bottom: 12px; color: #aeb8cd; font-size: 43px; }
+        .empty-state strong { display: block; margin-bottom: 6px; color: var(--ink); font-family: "Space Grotesk", sans-serif; font-size: 18px; }
+        .empty-state p { margin: 0; font-size: 13px; }
+        .message { margin: 12px 0; padding: 12px 15px; border: 1px solid #fed7aa; border-radius: 12px; color: #9a5812; background: #fff7ed; font-size: 13px; }
+        .generator { position: sticky; top: 25px; align-self: start; padding: 24px; border: 1px solid #e5e8f0; border-radius: 24px; background: #fff; box-shadow: var(--shadow); }
+        .generator::before { content: ""; display: block; width: 100%; height: 4px; margin: -24px 0 23px; border-radius: 24px 24px 0 0; background: linear-gradient(90deg, var(--blue), var(--aqua)); }
+        .generator-icon { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 17px; border-radius: 14px; color: var(--blue); background: #eef0ff; font-size: 23px; }
+        .generator h2 { margin-bottom: 7px; font-family: "Space Grotesk", sans-serif; font-size: 22px; letter-spacing: -.045em; }
+        .generator > p { margin-bottom: 22px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+        .field-label { display: block; margin-bottom: 8px; color: var(--ink); font-size: 12px; font-weight: 700; }
+        .generator-input { width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 11px; outline: 0; color: var(--ink); background: #fbfcfe; font-size: 14px; transition: .2s; }
+        .generator-input:focus { border-color: #9ca8f5; box-shadow: 0 0 0 4px #4356e817; background: white; }
+        .generator .primary-button { width: 100%; margin-top: 12px; padding: 13px; }
+        .custom-result { display: none; margin-top: 23px; padding-top: 20px; border-top: 1px solid var(--line); }
+        .custom-result.visible { display: block; animation: rise .35s both; }
+        .custom-result h3 { margin-bottom: 12px; font-size: 12px; color: var(--muted); font-weight: 600; }
+        .custom-barcode { display: grid; place-items: center; min-height: 110px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+        .custom-barcode svg { width: 100%; }
+        .custom-result .secondary-button { width: 100%; margin-top: 12px; }
+        .hidden { display: none !important; }
+        .focus-view { min-height: calc(100vh - 150px); display: grid; place-items: center; padding: 30px 0; animation: fade .3s both; }
+        .focus-card { width: min(720px, 100%); padding: 40px; border: 1px solid var(--line); border-radius: 26px; background: white; box-shadow: var(--shadow); text-align: center; }
+        .focus-card .eyebrow { justify-content: center; }
+        .focus-card h2 { margin: 14px 0 28px; font-family: "Space Grotesk", sans-serif; font-size: clamp(24px, 4vw, 36px); letter-spacing: -.055em; }
+        .focus-barcode { padding: 28px 20px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+        .focus-barcode svg { width: min(100%, 600px); max-height: 150px; }
+        .focus-actions { display: flex; justify-content: center; gap: 10px; margin-top: 25px; }
+        .lightbox { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 28px; background: #111827db; backdrop-filter: blur(10px); opacity: 0; pointer-events: none; transition: opacity .25s; }
+        .lightbox.open { opacity: 1; pointer-events: auto; }
+        .lightbox img { max-width: min(900px, 94vw); max-height: 84vh; object-fit: contain; border-radius: 18px; box-shadow: 0 25px 80px #0008; transform: scale(.94); transition: transform .3s; }
+        .lightbox.open img { transform: scale(1); }
+        .lightbox-close { position: absolute; top: 20px; right: 25px; width: 42px; height: 42px; border: 1px solid #ffffff33; border-radius: 50%; color: white; background: #ffffff1a; font-size: 21px; }
+        .product-modal { position: fixed; inset: 0; z-index: 19; display: grid; place-items: center; padding: 24px; background: #111827c9; backdrop-filter: blur(9px); opacity: 0; pointer-events: none; transition: opacity .25s; }
+        .product-modal.open { opacity: 1; pointer-events: auto; }
+        .product-modal-card { position: relative; display: grid; grid-template-columns: minmax(230px, .85fr) minmax(280px, 1.15fr); width: min(900px, 100%); max-height: min(720px, 92vh); overflow: auto; border: 1px solid #ffffff30; border-radius: 26px; background: white; box-shadow: 0 30px 100px #0007; transform: translateY(12px) scale(.97); transition: transform .3s; }
+        .product-modal.open .product-modal-card { transform: translateY(0) scale(1); }
+        .modal-product-image { min-height: 420px; display: grid; place-items: center; padding: 35px; background: linear-gradient(145deg, #eef1ff, #eafff9); }
+        .modal-product-image img { width: 100%; height: 100%; max-height: 460px; object-fit: contain; cursor: zoom-in; }
+        .modal-product-info { display: flex; flex-direction: column; justify-content: center; padding: 44px; }
+        .modal-product-info h2 { margin: 12px 0 25px; font-family: "Space Grotesk", sans-serif; font-size: clamp(23px, 3vw, 34px); line-height: 1.15; letter-spacing: -.055em; }
+        .modal-barcode { display: grid; place-items: center; min-height: 150px; padding: 18px; border: 1px solid var(--line); border-radius: 15px; background: #fbfcfe; }
+        .modal-barcode svg { width: 100%; max-height: 115px; }
+        .modal-barcode-label { margin: 0 0 10px; color: var(--muted); font-size: 12px; font-weight: 700; }
+        .modal-product-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+        .modal-close { position: absolute; z-index: 1; top: 15px; right: 15px; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); background: #ffffffdc; font-size: 19px; }
+        .modal-close:hover { color: var(--ink); background: white; }
+        @keyframes rise { from { opacity: 0; transform: translateY(13px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        @media (max-width: 880px) { .layout { grid-template-columns: 1fr; } #bakeryView, .generator { grid-column: auto; grid-row: auto; } .generator { position: static; order: -1; } .generator::before { margin-bottom: 18px; } }
+        @media (max-width: 620px) { .topbar { height: 68px; padding: 0 17px; } .topbar-actions { gap: 6px; } .category-tab { padding: 9px 10px; font-size: 11px; } .category-tab i { display: none; } .status-pill { display: none; } .layout { padding: 18px 17px 45px; } .hero { padding-top: 24px; } h1 { font-size: 41px; } .shortcut { display: none; } .product-grid { grid-template-columns: 1fr; } .product-image { height: 230px; } .focus-card { padding: 26px 16px; } .product-modal { padding: 12px; } .product-modal-card { grid-template-columns: 1fr; max-height: 94vh; } .modal-product-image { min-height: 260px; height: 42vh; padding: 25px; } .modal-product-info { padding: 25px 20px 28px; } }
+        @media print { body { background: white; } body * { visibility: hidden !important; } #print-area, #print-area * { visibility: visible !important; } #print-area { position: absolute; inset: 0; display: grid !important; place-items: center; padding: 40px; } .print-title { display: block !important; } }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar no-print">
+        <a class="brand" href="#" aria-label="KarVARCODE ana sayfa" onclick="showSearch(); return false;">
+            <span class="brand-mark"><i class="ph-bold ph-barcode"></i></span>
+            <span class="brand-name">KarVAR<span>CODE</span></span>
+        </a>
+        <div class="topbar-actions">
+            <button id="bakeryTab" class="category-tab" type="button"><i class="ph ph-bread"></i> Fırın ürünleri</button>
+            <div class="status-pill"><span class="status-dot"></span> Sistem hazır</div>
+        </div>
+    </header>
+
+    <main id="mainContent" class="layout no-print">
+        <section id="searchView">
+            <div class="hero">
+                <span class="eyebrow">Akıllı barkod merkezi</span>
+                <h1>Aradığını bul.<br><em>Barkodunu yönet.</em></h1>
+                <p class="hero-copy">Ürün kataloğunda saniyeler içinde arama yapın, ürün görsellerini inceleyin ve barkodları yazdırmaya hazır şekilde görüntüleyin.</p>
+                <label class="search-box" for="searchInput">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input id="searchInput" type="search" autocomplete="off" placeholder="Ürün adı veya barkod numarası ile ara..." aria-label="Ürün ara">
+                    <span class="shortcut"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+                </label>
+            </div>
+            <div id="messageContainer" class="hidden"></div>
+            <div id="resultsSection" class="hidden">
+                <div class="section-head"><h2>Arama sonuçları</h2><span id="resultCount" class="result-count"></span></div>
+                <div id="productGrid" class="product-grid"></div>
+                <div id="emptyState" class="empty-state hidden"><div><i class="ph ph-magnifying-glass"></i><strong>Sonuç bulunamadı</strong><p>Farklı bir ürün adı veya barkod deneyin.</p></div></div>
+            </div>
+        </section>
+        <section id="bakeryView" class="hidden">
+            <div class="hero">
+                <span class="eyebrow">Özel kategori</span>
+                <h1>Fırın <em>ürünleri.</em></h1>
+                <p class="hero-copy">Sizin için seçilen fırın ürünlerini, ürün görseli ve barkoduyla birlikte inceleyin.</p>
+            </div>
+            <div id="bakeryMessage" class="hidden"></div>
+            <div class="section-head"><h2>Fırın ürünleri</h2><span id="bakeryCount" class="result-count"></span></div>
+            <div id="bakeryGrid" class="product-grid"></div>
+            <div id="bakeryEmpty" class="empty-state hidden"><div><i class="ph ph-bread"></i><strong>Fırın ürünü bulunamadı</strong><p>Bu barkodlar product.json içinde bulunamadı.</p></div></div>
+        </section>
+
+        <aside class="generator no-print" aria-labelledby="generatorTitle">
+            <div class="generator-icon"><i class="ph ph-barcode"></i></div>
+            <h2 id="generatorTitle">Manuel Barkod Oluştur</h2>
+            <p>Kendi numaranızı veya metninizi girin. Barkodunuzu anında oluşturup çıktı alın.</p>
+            <label class="field-label" for="customBarcodeInput">Barkod değeri</label>
+            <input id="customBarcodeInput" class="generator-input" type="text" placeholder="Örn. 8690001234567" autocomplete="off">
+            <button id="generateButton" class="primary-button" type="button"><i class="ph ph-sparkle"></i> Barkodu oluştur</button>
+            <div id="customBarcodeResult" class="custom-result">
+                <h3>Önizleme</h3>
+                <div class="custom-barcode"><svg id="customBarcodeSvg"></svg></div>
+                <button id="printCustomButton" class="secondary-button" type="button"><i class="ph ph-printer"></i> Yazdır (Çıktı Al)</button>
+            </div>
+        </aside>
+    </main>
+
+    <section id="focusView" class="focus-view hidden">
+        <div id="print-area" class="focus-card">
+            <span class="eyebrow">Odak modu</span>
+            <h2 id="focusProductName">Ürün barkodu</h2>
+            <div class="focus-barcode"><svg id="focusBarcodeSvg"></svg></div>
+            <div class="focus-actions no-print">
+                <button id="closeFocusButton" class="secondary-button" type="button"><i class="ph ph-arrow-left"></i> Geri dön</button>
+                <button id="printFocusButton" class="primary-button" type="button"><i class="ph ph-printer"></i> Yazdır (Çıktı Al)</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Ürün görseli">
+    <button id="lightboxClose" class="lightbox-close" type="button" aria-label="Kapat"><i class="ph ph-x"></i></button>
+    <img id="lightboxImg" src="" alt="Büyütülmüş ürün görseli">
+</div>
+
+<div id="productModal" class="product-modal" role="dialog" aria-modal="true" aria-labelledby="modalProductName">
+    <div class="product-modal-card">
+        <button id="productModalClose" class="modal-close" type="button" aria-label="Ürün detayını kapat"><i class="ph ph-x"></i></button>
+        <div class="modal-product-image">
+            <img id="modalProductImage" src="" alt="">
+        </div>
+        <div class="modal-product-info">
+            <span class="eyebrow">Ürün detayı</span>
+            <h2 id="modalProductName">Ürün adı</h2>
+            <p class="modal-barcode-label">Barkod önizlemesi</p>
+            <div class="modal-barcode"><svg id="modalBarcodeSvg"></svg></div>
+            <div class="modal-product-actions">
+                <button id="modalImageButton" class="secondary-button" type="button"><i class="ph ph-arrows-out"></i> Görseli büyüt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let products = [];
+    let searchIndex = [];
+    let searchTimer;
+    let focusReturn = "search";
+    const bakeryBarcodes = [
+        "8681573033125", "8681573033712", "8681573030063", "8681573033842",
+        "8681573033316", "5941878404550", "8681573030278", "8681573033811",
+        "8681573033927", "5941878404789", "8681573032241", "8681573031923",
+        "8681573032180", "8681573031756", "8681573031732", "8681573031749",
+        "8681573031954", "8681573031978", "8681573033637"
+    ];
+    const fallbackProducts = [
+        { id: 1, name: "Kahve Çekirdeği 1kg", barcodes: ["8691234567890"], picURL: "https://placehold.co/600x600/4356e8/ffffff?text=Kahve" },
+        { id: 2, name: "Süt 1 Litre Tam Yağlı", barcodes: ["8690987654321"], picURL: "https://placehold.co/600x600/23c9b8/ffffff?text=Sut" }
+    ];
+    const $ = (id) => document.getElementById(id);
+    const searchInput = $("searchInput");
+    let selectedProduct = null;
+
+    function normalize(value) {
+        return String(value || "")
+            .toLocaleLowerCase("tr-TR")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/ı/g, "i")
+            .replace(/[^a-z0-9]+/g, " ")
+            .trim();
+    }
+
+    async function init() {
+        try {
+            const response = await fetch("product.json");
+            if (!response.ok) throw new Error("product.json yüklenemedi");
+            products = await response.json();
+        } catch (error) {
+            products = fallbackProducts;
+            showMessage("Ürün kataloğu yüklenemedi. Şimdilik örnek ürünler gösteriliyor.", "warning");
+        }
+        searchIndex = products.map((product) => ({
+            product,
+            text: normalize(`${product.name || ""} ${(product.barcodes || []).join(" ")}`)
+        }));
+    }
+
+    function showMessage(text, type) {
+        const container = $("messageContainer");
+        container.className = "message";
+        container.textContent = text;
+        if (type !== "warning") container.className = "hidden";
+    }
+
+    function showSearch() {
+        $("focusView").classList.add("hidden");
+        $("mainContent").classList.remove("hidden");
+        $("searchView").classList.remove("hidden");
+        focusReturn = "search";
+        searchInput.focus();
+    }
+
+    function showBakery() {
+        $("focusView").classList.add("hidden");
+        $("mainContent").classList.remove("hidden");
+        $("searchView").classList.remove("hidden");
+        $("bakeryView").classList.remove("hidden");
+        $("bakeryTab").classList.add("active");
+        const allowed = new Set(bakeryBarcodes);
+        const bakeryProducts = products.filter((product) =>
+            Array.isArray(product.barcodes) && product.barcodes.some((barcode) => allowed.has(String(barcode)))
+        );
+        renderProducts(bakeryProducts, 1, $("bakeryGrid"), $("bakeryCount"), $("bakeryEmpty"));
+        const missing = bakeryBarcodes.length - bakeryProducts.length;
+        const message = $("bakeryMessage");
+        if (missing > 0) {
+            message.className = "message";
+            message.textContent = `${bakeryProducts.length} ürün bulundu. ${missing} barkod product.json içinde eşleşmedi.`;
+        } else {
+            message.className = "hidden";
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function setResultsVisible(visible) {
+        $("resultsSection").classList.toggle("hidden", !visible);
+    }
+
+    searchInput.addEventListener("input", (event) => {
+        clearTimeout(searchTimer);
+        const query = normalize(event.target.value);
+        if (!query) {
+            setResultsVisible(false);
+            $("productGrid").replaceChildren();
+            return;
+        }
+        searchTimer = setTimeout(() => {
+            const queryTokens = query.split(/\s+/).filter(Boolean);
+            const found = searchIndex
+                .filter(({ text }) => {
+                    // Kelimelerin sırası önemli değil: "ekmek 200" ve "200 ekmek" aynı sonucu verir.
+                    return queryTokens.every((token) => text.includes(token));
+                })
+                .slice(0, 48)
+                .map(({ product }) => product);
+            renderProducts(found, queryTokens.length, $("productGrid"), $("resultCount"), $("emptyState"));
+        }, 90);
+    });
+
+    function renderProducts(found, tokenCount = 1, grid = $("productGrid"), resultCount = $("resultCount"), emptyState = $("emptyState")) {
+        if (grid === $("productGrid")) setResultsVisible(true);
+        resultCount.textContent = `${found.length}${found.length === 48 ? "+" : ""} ürün`;
+        grid.replaceChildren();
+        emptyState.classList.toggle("hidden", found.length > 0);
+        if (!found.length) return;
+        const fragment = document.createDocumentFragment();
+        found.forEach((product, index) => {
+            const barcode = Array.isArray(product.barcodes) && product.barcodes.length ? String(product.barcodes[0]) : "";
+            const card = document.createElement("article");
+            card.className = "product-card";
+            card.tabIndex = 0;
+            card.setAttribute("role", "button");
+            card.setAttribute("aria-label", `${product.name || "Ürün"} detayını aç`);
+            card.style.animationDelay = `${index * 45}ms`;
+            const image = document.createElement("div");
+            image.className = "product-image";
+            const img = document.createElement("img");
+            img.src = product.picURL || "https://placehold.co/600x600/e8edf5/718096?text=Görsel+Yok";
+            img.alt = product.name || "Ürün görseli";
+            img.onerror = () => { img.src = "https://placehold.co/600x600/f3d6d6/9b4545?text=Görsel+Yok"; };
+            image.append(img);
+            const zoom = document.createElement("span");
+            zoom.className = "zoom-hint";
+            zoom.innerHTML = '<i class="ph ph-arrows-out"></i>';
+            image.append(zoom);
+            const content = document.createElement("div");
+            content.className = "card-content";
+            const title = document.createElement("h3");
+            title.className = "product-name";
+            title.textContent = product.name || "İsimsiz ürün";
+            content.append(title);
+            const frame = document.createElement("div");
+            frame.className = "barcode-frame";
+            if (barcode) {
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                frame.append(svg);
+                try { JsBarcode(svg, barcode, { format: "CODE128", width: 1.7, height: 50, displayValue: true, fontSize: 11, margin: 2, lineColor: "#18202f" }); }
+                catch (error) { frame.textContent = "Barkod önizlemesi oluşturulamadı"; }
+            } else {
+                frame.innerHTML = '<span class="barcode-empty">Bu ürün için barkod yok</span>';
+            }
+            content.append(frame);
+            const bottom = document.createElement("div");
+            bottom.className = "card-bottom";
+            const value = document.createElement("span");
+            value.className = "barcode-value";
+            value.textContent = barcode || "—";
+            bottom.append(value);
+            content.append(bottom);
+            card.append(image, content);
+            card.addEventListener("click", () => openProductModal(product, barcode, img.src));
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openProductModal(product, barcode, img.src);
+                }
+            });
+            fragment.append(card);
+        });
+        grid.append(fragment);
+    }
+
+    function generateBarcode(target, value, options = {}) {
+        try {
+            JsBarcode(target, value, { format: "CODE128", width: 2.2, height: 80, displayValue: true, fontSize: 16, margin: 8, lineColor: "#18202f", ...options });
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function openFocus(barcode, name) {
+        focusReturn = "search";
+        $("mainContent").classList.add("hidden");
+        $("focusView").classList.remove("hidden");
+        $("focusProductName").textContent = name || "Ürün barkodu";
+        const svg = $("focusBarcodeSvg");
+        svg.replaceChildren();
+        if (!generateBarcode(svg, barcode, { width: 3, height: 110, fontSize: 20 })) {
+            svg.outerHTML = "<p>Barkod oluşturulamadı.</p>";
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openProductModal(product, barcode, imageSrc) {
+        selectedProduct = { product, barcode, imageSrc };
+        $("modalProductName").textContent = product.name || "İsimsiz ürün";
+        $("modalProductImage").src = imageSrc;
+        $("modalProductImage").alt = product.name || "Ürün görseli";
+        const svg = $("modalBarcodeSvg");
+        svg.parentElement.querySelectorAll(".barcode-empty").forEach((message) => message.remove());
+        svg.classList.remove("hidden");
+        svg.replaceChildren();
+        if (barcode) {
+            generateBarcode(svg, barcode, { width: 2.8, height: 85, fontSize: 16 });
+        } else {
+            svg.insertAdjacentHTML("afterend", '<span class="barcode-empty">Bu ürün için barkod bulunamadı</span>');
+            svg.classList.add("hidden");
+        }
+        $("productModal").classList.add("open");
+        $("productModalClose").focus();
+    }
+
+    function closeProductModal() {
+        $("productModal").classList.remove("open");
+        selectedProduct = null;
+    }
+
+    $("closeFocusButton").addEventListener("click", showSearch);
+    $("bakeryTab").addEventListener("click", showBakery);
+    $("printFocusButton").addEventListener("click", () => window.print());
+    $("productModalClose").addEventListener("click", closeProductModal);
+    $("productModal").addEventListener("click", (event) => {
+        if (event.target === $("productModal")) closeProductModal();
+    });
+    $("modalImageButton").addEventListener("click", () => {
+        if (selectedProduct) openLightbox(selectedProduct.imageSrc, selectedProduct.product.name || "Ürün görseli");
+    });
+    $("modalProductImage").addEventListener("click", () => {
+        if (selectedProduct) openLightbox(selectedProduct.imageSrc, selectedProduct.product.name || "Ürün görseli");
+    });
+    $("generateButton").addEventListener("click", generateCustom);
+    $("customBarcodeInput").addEventListener("keydown", (event) => { if (event.key === "Enter") generateCustom(); });
+    $("printCustomButton").addEventListener("click", () => {
+        const value = $("customBarcodeInput").value.trim();
+        if (!value) return;
+        openFocus(value, "Manuel oluşturulan barkod");
+        setTimeout(() => window.print(), 150);
+    });
+
+    function generateCustom() {
+        const value = $("customBarcodeInput").value.trim();
+        const result = $("customBarcodeResult");
+        if (!value) { $("customBarcodeInput").focus(); return; }
+        const svg = $("customBarcodeSvg");
+        svg.replaceChildren();
+        if (generateBarcode(svg, value)) result.classList.add("visible");
+        else { result.classList.remove("visible"); alert("Bu değer Code 128 barkodu için uygun değil."); }
+    }
+
+    function openLightbox(src, alt) {
+        $("lightboxImg").src = src;
+        $("lightboxImg").alt = alt;
+        $("lightbox").classList.add("open");
+    }
+    function closeLightbox() { $("lightbox").classList.remove("open"); }
+    $("lightbox").addEventListener("click", (event) => { if (event.target === $("lightbox") || event.target === $("lightboxClose")) closeLightbox(); });
+    document.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); searchInput.focus(); }
+        if (event.key === "Escape") {
+            closeLightbox();
+            closeProductModal();
+        }
+    });
+    init();
+</script>
+</body>
+</html>
