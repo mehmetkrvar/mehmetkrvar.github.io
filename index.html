@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KarVARCODE | Akıllı Barkod Merkezi</title>
+    <meta name="description" content="KarVARCODE ile ürün arayın, CODE128 barkod oluşturun ve barkod yönetimi hakkında pratik bilgiler edinin.">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%234356e8'/%3E%3Cstop offset='1' stop-color='%237a5cf4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='18' fill='url(%23g)'/%3E%3Cpath d='M16 18h5v28h-5zm9 0h3v28h-3zm7 0h6v28h-6zm10 0h3v28h-3zm7 0h3v28h-3z' fill='white'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +43,7 @@
         .category-tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid #dfe3f7; border-radius: 12px; color: var(--blue); background: #f8f9ff; font-size: 12px; font-weight: 700; transition: .2s; }
         .category-tab:hover, .category-tab.active { color: white; border-color: var(--blue); background: var(--blue); box-shadow: 0 7px 16px #4356e833; transform: translateY(-1px); }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aqua); box-shadow: 0 0 0 4px #23c9b81c; }
-        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 30px; max-width: 1240px; margin: auto; padding: 38px 28px 40px; }
+        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 30px; max-width: 1240px; margin: auto; padding: 38px 28px 70px; }
         #bakeryView { grid-column: 1; }
         .generator { grid-column: 2; grid-row: 1 / span 2; }
         .hero { max-width: 700px; padding: 28px 0 34px; }
@@ -130,25 +131,34 @@
         .modal-product-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
         .modal-close { position: absolute; z-index: 1; top: 15px; right: 15px; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); background: #ffffffdc; font-size: 19px; }
         .modal-close:hover { color: var(--ink); background: white; }
+        .guide-section { max-width: 1240px; margin: 0 auto; padding: 0 28px 55px; }
+        .guide-intro { max-width: 700px; margin-bottom: 22px; }
+        .guide-intro h2 { margin: 10px 0; font-family: "Space Grotesk", sans-serif; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.05em; }
+        .guide-intro p, .guide-content p { color: var(--muted); line-height: 1.75; }
+        .guide-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        .guide-card { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: 0 6px 20px #22305508; }
+        .guide-card summary { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 19px 20px; cursor: pointer; list-style: none; font-family: "Space Grotesk", sans-serif; font-size: 17px; font-weight: 700; transition: color .2s, background .2s; }
+        .guide-card summary::-webkit-details-marker { display: none; }
+        .guide-card summary h2 { margin: 0; font: inherit; letter-spacing: -.035em; }
+        .guide-card summary::after { content: ""; flex: 0 0 10px; width: 10px; height: 10px; margin: -5px 3px 0 10px; border-right: 2px solid var(--blue); border-bottom: 2px solid var(--blue); transform: rotate(45deg); transition: transform .25s ease; }
+        .guide-card summary:hover { color: var(--blue); background: #f8f9ff; }
+        .guide-card summary:focus-visible { outline: 3px solid #9ca8f5; outline-offset: -3px; }
+        .guide-card[open] summary::after { transform: rotate(225deg); }
+        .guide-content { padding: 0 20px 20px; }
+        .guide-content p { margin-bottom: 12px; font-size: 14px; }
+        .guide-content p:last-child { margin-bottom: 0; }
+        .site-footer { border-top: 1px solid var(--line); background: #ffffffb8; }
+        .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 1240px; margin: auto; padding: 24px 28px; }
+        .footer-copy, .footer-contact { color: var(--muted); font-size: 13px; line-height: 1.6; }
+        .footer-copy strong { color: var(--ink); }
+        .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 14px 20px; }
+        .footer-links a { color: var(--blue); font-size: 13px; font-weight: 700; text-decoration: none; }
+        .footer-links a:hover { text-decoration: underline; }
         @keyframes rise { from { opacity: 0; transform: translateY(13px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
         @media (max-width: 880px) { .layout { grid-template-columns: 1fr; } #bakeryView, .generator { grid-column: auto; grid-row: auto; } .generator { position: static; order: -1; } .generator::before { margin-bottom: 18px; } }
-        @media (max-width: 620px) { .topbar { height: 68px; padding: 0 17px; } .topbar-actions { gap: 6px; } .category-tab { padding: 9px 10px; font-size: 11px; } .category-tab i { display: none; } .status-pill { display: none; } .layout { padding: 18px 17px 45px; } .hero { padding-top: 24px; } h1 { font-size: 41px; } .shortcut { display: none; } .product-grid { grid-template-columns: 1fr; } .product-image { height: 230px; } .focus-card { padding: 26px 16px; } .product-modal { padding: 12px; } .product-modal-card { grid-template-columns: 1fr; max-height: 94vh; } .modal-product-image { min-height: 260px; height: 42vh; padding: 25px; } .modal-product-info { padding: 25px 20px 28px; } }
+        @media (max-width: 620px) { .topbar { height: 68px; padding: 0 17px; } .topbar-actions { gap: 6px; } .category-tab { padding: 9px 10px; font-size: 11px; } .category-tab i { display: none; } .status-pill { display: none; } .layout { padding: 18px 17px 45px; } .hero { padding-top: 24px; } h1 { font-size: 41px; } .shortcut { display: none; } .product-grid { grid-template-columns: 1fr; } .product-image { height: 230px; } .focus-card { padding: 26px 16px; } .product-modal { padding: 12px; } .product-modal-card { grid-template-columns: 1fr; max-height: 94vh; } .modal-product-image { min-height: 260px; height: 42vh; padding: 25px; } .modal-product-info { padding: 25px 20px 28px; } .guide-section { padding-right: 17px; padding-left: 17px; } .guide-grid { grid-template-columns: 1fr; } .footer-inner { align-items: flex-start; flex-direction: column; padding: 22px 17px; } .footer-links { justify-content: flex-start; } }
         @media print { body { background: white; } body * { visibility: hidden !important; } #print-area, #print-area * { visibility: visible !important; } #print-area { position: absolute; inset: 0; display: grid !important; place-items: center; padding: 40px; } .print-title { display: block !important; } }
-        
-        /* --- YENİ EKLENEN ADSENSE / SEO ALANI STİLLERİ --- */
-        .seo-section { max-width: 1240px; margin: 0 auto; padding: 0 28px 40px; }
-        .seo-content { background: var(--surface); padding: 35px; border-radius: 24px; border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
-        .seo-content h2 { font-family: "Space Grotesk", sans-serif; font-size: 20px; color: var(--blue); margin-top: 28px; margin-bottom: 14px; letter-spacing: -.03em; }
-        .seo-content h2:first-child { margin-top: 0; }
-        .seo-content p, .seo-content li { color: var(--muted); font-size: 15px; line-height: 1.7; margin-bottom: 14px; }
-        .seo-content ul { margin-top: 0; padding-left: 22px; }
-        .seo-content strong { color: var(--ink); }
-        
-        .site-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; padding: 25px 0; margin-top: 30px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
-        .site-footer a { color: var(--muted); text-decoration: none; font-weight: 600; transition: color 0.2s; margin-left: 20px; }
-        .site-footer a:hover { color: var(--blue); }
-        @media (max-width: 620px) { .site-footer { flex-direction: column; text-align: center; } .site-footer a { margin: 0 10px; } .seo-section { padding: 0 17px 30px; } .seo-content { padding: 24px; } }
     </style>
 </head>
 <body>
@@ -210,40 +220,6 @@
         </aside>
     </main>
 
-    <!-- YENİ EKLENEN ADSENSE / SEO VE FOOTER ALANI BAŞLANGICI -->
-    <section class="seo-section no-print">
-        <div class="seo-content">
-            <h2>KarVARCODE Nasıl Kullanılır?</h2>
-            <p>KarVARCODE, perakende mağazaları, depolar ve kargo operasyonları için geliştirilmiş hızlı ve minimalist bir <strong>barkod yönetim</strong> aracıdır. Sistem iki temel işlev sunar:</p>
-            <ul>
-                <li><strong>Akıllı Arama:</strong> Arama kutusuna ürünün adını veya mevcut barkod numarasını yazarak saniyeler içinde ürünün görseline, detaylarına ve yazdırılabilir barkod şablonuna ulaşabilirsiniz.</li>
-                <li><strong>Manuel Barkod Üretici:</strong> Elinizde kayıtlı olmayan veya yeni oluşturduğunuz bir numara varsa, sağ taraftaki (mobilde ekranın altındaki) alana bu değeri girerek anında uluslararası standartlara uygun bir barkod üretebilirsiniz.</li>
-            </ul>
-
-            <h2>CODE128 Barkod Sistemi Nedir?</h2>
-            <p>Sistemimiz, endüstri standardı olan <strong>CODE128</strong> formatını kullanır. CODE128, yalnızca rakamları değil, aynı zamanda harfleri ve özel karakterleri (alfasayısal) de destekleyen yüksek yoğunluklu bir barkod türüdür.</p>
-            <ul>
-                <li><strong>Evrensel Uyumluluk:</strong> Dünyadaki tüm modern el terminalleri, optik okuyucular ve akıllı telefon kameraları tarafından sorunsuz okunur.</li>
-                <li><strong>Kompakt Tasarım:</strong> Uzun veri dizilerini çok dar alanlara sığdırabilmesi sayesinde küçük ürün etiketlerinde bile yüksek çözünürlük sağlar.</li>
-            </ul>
-
-            <h2>Neden Bizi Tercih Etmelisiniz?</h2>
-            <p>Uygulamamız tamamen <strong>istemci tarafında (Client-Side)</strong> çalışır. Bu sayede girdiğiniz barkod verileri, ürün isimleri veya arama geçmişiniz hiçbir şekilde dış sunuculara (server) aktarılmaz ve kaydedilmez. Verileriniz cihazınızda kalır. Üstelik internet bağlantınız kopsa dahi, sayfa açık olduğu sürece araçlarımızı kesintisiz kullanmaya devam edebilirsiniz.</p>
-        </div>
-
-        <footer class="site-footer">
-            <div class="footer-copy">
-                &copy; 2026 KarVARCODE Barkod Sistemleri. Tüm hakları saklıdır.
-            </div>
-            <div class="footer-links">
-                <a href="#">Gizlilik Politikası (Privacy Policy)</a>
-                <a href="#">Kullanım Koşulları</a>
-                <a href="#">İletişim</a>
-            </div>
-        </footer>
-    </section>
-    <!-- YENİ EKLENEN ALAN BİTİŞİ -->
-
     <section id="focusView" class="focus-view hidden">
         <div id="print-area" class="focus-card">
             <span class="eyebrow">Odak modu</span>
@@ -257,7 +233,48 @@
     </section>
 </div>
 
-<!-- (Lightbox ve Modal Kodları Aşağıda Aynen Korundu) -->
+<section class="guide-section" aria-labelledby="guideTitle">
+    <div class="guide-intro">
+        <span class="eyebrow">Barkod rehberi</span>
+        <h2 id="guideTitle">KarVARCODE ile barkod yönetimi</h2>
+        <p>KarVARCODE, ürün arama ve barkod oluşturma süreçlerini tek bir ekranda kolaylaştıran pratik bir barkod merkezidir.</p>
+    </div>
+    <div class="guide-grid">
+        <details class="guide-card">
+            <summary><h2>Nasıl Kullanılır?</h2></summary>
+            <div class="guide-content">
+                <p>Ürün kataloğunda arama yapmak için arama alanına ürün adını veya barkod numarasını yazın. Sistem, yazdığınız kelimeleri dikkate alarak ilgili ürünleri ve barkod önizlemelerini hızlıca listeler. Ürün kartına tıklayarak görseli büyütebilir ve barkod ayrıntılarını inceleyebilirsiniz.</p>
+                <p>Manuel barkod oluşturma özelliğiyle kendi numaranızı veya metninizi sağdaki alana girin. “Barkodu oluştur” düğmesine bastığınızda CODE128 formatında bir önizleme hazırlanır; ardından çıktınızı yazdırabilir veya odak modunda görüntüleyebilirsiniz. Fırın ürünleri sekmesi ise ilgili ürün grubuna tek tıklamayla ulaşmanızı sağlar.</p>
+            </div>
+        </details>
+        <details class="guide-card">
+            <summary><h2>Desteklenen Barkod Türleri</h2></summary>
+            <div class="guide-content">
+                <p>CODE128, harf ve rakamları taşıyabilen, lojistik ve depo operasyonlarında sık kullanılan kompakt bir barkod standardıdır. EAN-13 ve EAN-8, perakende ürünlerinin kasa ve stok sistemlerinde tanınmasını sağlayan Avrupa ve uluslararası ürün numarası standartlarıdır.</p>
+                <p>UPC, özellikle Kuzey Amerika perakendesinde kullanılan ürün barkodu türüdür. Bu standartlar; depo raf yönetimi, mağaza satış noktaları, kargo ve sevkiyat takibi gibi süreçlerde ürünlerin hızlı ve hatasız tanımlanmasına yardımcı olur.</p>
+            </div>
+        </details>
+        <details class="guide-card">
+            <summary><h2>Neden KarVARCODE?</h2></summary>
+            <div class="guide-content">
+                <p>KarVARCODE, barkod oluşturma ve ürün arama işlemlerini mümkün olduğunca istemci tarafında gerçekleştirir. Bu sayede temel barkod üretimi için sürekli bir internet bağlantısına ihtiyaç duymazsınız; sayfa ve gerekli kütüphaneler yüklendikten sonra işlemler tarayıcınızda devam eder.</p>
+                <p>Gizliliğe önem veren tasarımımız, arama ve manuel barkod oluşturma deneyimini sade tutar. Kişisel veri girmeden barkodlarınızı hazırlayabilir, ürün görsellerini inceleyebilir ve iş akışınızı hızlıca sürdürebilirsiniz.</p>
+            </div>
+        </details>
+    </div>
+</section>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-copy"><strong>KarVARCODE</strong> · Akıllı barkod merkezi</div>
+        <div id="contact" class="footer-contact">İletişim: <strong>ÜMİTKÖY GETİR BÜYÜK DEPOSU</strong></div>
+        <nav class="footer-links" aria-label="Yasal ve iletişim bağlantıları">
+            <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy / Gizlilik Politikası</a>
+            <a href="contact.html" target="_blank" rel="noopener">İletişim</a>
+        </nav>
+    </div>
+</footer>
+
 <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Ürün görseli">
     <button id="lightboxClose" class="lightbox-close" type="button" aria-label="Kapat"><i class="ph ph-x"></i></button>
     <img id="lightboxImg" src="" alt="Büyütülmüş ürün görseli">
@@ -383,6 +400,7 @@
             const queryTokens = query.split(/\s+/).filter(Boolean);
             const found = searchIndex
                 .filter(({ text }) => {
+                    // Kelimelerin sırası önemli değil: "ekmek 200" ve "200 ekmek" aynı sonucu verir.
                     return queryTokens.every((token) => text.includes(token));
                 })
                 .slice(0, 48)
@@ -538,7 +556,7 @@
         $("lightbox").classList.add("open");
     }
     function closeLightbox() { $("lightbox").classList.remove("open"); }
-    $("lightbox").addEventListener("click", (event) => { if (event.target === $("lightbox") \vert{}\vert{} event.target === $("lightboxClose")) closeLightbox(); });
+    $("lightbox").addEventListener("click", (event) => { if (event.target === $("lightbox") || event.target === $("lightboxClose")) closeLightbox(); });
     document.addEventListener("keydown", (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); searchInput.focus(); }
         if (event.key === "Escape") {
