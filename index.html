@@ -42,7 +42,7 @@
         .category-tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid #dfe3f7; border-radius: 12px; color: var(--blue); background: #f8f9ff; font-size: 12px; font-weight: 700; transition: .2s; }
         .category-tab:hover, .category-tab.active { color: white; border-color: var(--blue); background: var(--blue); box-shadow: 0 7px 16px #4356e833; transform: translateY(-1px); }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aqua); box-shadow: 0 0 0 4px #23c9b81c; }
-        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 30px; max-width: 1240px; margin: auto; padding: 38px 28px 70px; }
+        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 30px; max-width: 1240px; margin: auto; padding: 38px 28px 40px; }
         #bakeryView { grid-column: 1; }
         .generator { grid-column: 2; grid-row: 1 / span 2; }
         .hero { max-width: 700px; padding: 28px 0 34px; }
@@ -135,6 +135,20 @@
         @media (max-width: 880px) { .layout { grid-template-columns: 1fr; } #bakeryView, .generator { grid-column: auto; grid-row: auto; } .generator { position: static; order: -1; } .generator::before { margin-bottom: 18px; } }
         @media (max-width: 620px) { .topbar { height: 68px; padding: 0 17px; } .topbar-actions { gap: 6px; } .category-tab { padding: 9px 10px; font-size: 11px; } .category-tab i { display: none; } .status-pill { display: none; } .layout { padding: 18px 17px 45px; } .hero { padding-top: 24px; } h1 { font-size: 41px; } .shortcut { display: none; } .product-grid { grid-template-columns: 1fr; } .product-image { height: 230px; } .focus-card { padding: 26px 16px; } .product-modal { padding: 12px; } .product-modal-card { grid-template-columns: 1fr; max-height: 94vh; } .modal-product-image { min-height: 260px; height: 42vh; padding: 25px; } .modal-product-info { padding: 25px 20px 28px; } }
         @media print { body { background: white; } body * { visibility: hidden !important; } #print-area, #print-area * { visibility: visible !important; } #print-area { position: absolute; inset: 0; display: grid !important; place-items: center; padding: 40px; } .print-title { display: block !important; } }
+        
+        /* --- YENİ EKLENEN ADSENSE / SEO ALANI STİLLERİ --- */
+        .seo-section { max-width: 1240px; margin: 0 auto; padding: 0 28px 40px; }
+        .seo-content { background: var(--surface); padding: 35px; border-radius: 24px; border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+        .seo-content h2 { font-family: "Space Grotesk", sans-serif; font-size: 20px; color: var(--blue); margin-top: 28px; margin-bottom: 14px; letter-spacing: -.03em; }
+        .seo-content h2:first-child { margin-top: 0; }
+        .seo-content p, .seo-content li { color: var(--muted); font-size: 15px; line-height: 1.7; margin-bottom: 14px; }
+        .seo-content ul { margin-top: 0; padding-left: 22px; }
+        .seo-content strong { color: var(--ink); }
+        
+        .site-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; padding: 25px 0; margin-top: 30px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+        .site-footer a { color: var(--muted); text-decoration: none; font-weight: 600; transition: color 0.2s; margin-left: 20px; }
+        .site-footer a:hover { color: var(--blue); }
+        @media (max-width: 620px) { .site-footer { flex-direction: column; text-align: center; } .site-footer a { margin: 0 10px; } .seo-section { padding: 0 17px 30px; } .seo-content { padding: 24px; } }
     </style>
 </head>
 <body>
@@ -196,6 +210,40 @@
         </aside>
     </main>
 
+    <!-- YENİ EKLENEN ADSENSE / SEO VE FOOTER ALANI BAŞLANGICI -->
+    <section class="seo-section no-print">
+        <div class="seo-content">
+            <h2>KarVARCODE Nasıl Kullanılır?</h2>
+            <p>KarVARCODE, perakende mağazaları, depolar ve kargo operasyonları için geliştirilmiş hızlı ve minimalist bir <strong>barkod yönetim</strong> aracıdır. Sistem iki temel işlev sunar:</p>
+            <ul>
+                <li><strong>Akıllı Arama:</strong> Arama kutusuna ürünün adını veya mevcut barkod numarasını yazarak saniyeler içinde ürünün görseline, detaylarına ve yazdırılabilir barkod şablonuna ulaşabilirsiniz.</li>
+                <li><strong>Manuel Barkod Üretici:</strong> Elinizde kayıtlı olmayan veya yeni oluşturduğunuz bir numara varsa, sağ taraftaki (mobilde ekranın altındaki) alana bu değeri girerek anında uluslararası standartlara uygun bir barkod üretebilirsiniz.</li>
+            </ul>
+
+            <h2>CODE128 Barkod Sistemi Nedir?</h2>
+            <p>Sistemimiz, endüstri standardı olan <strong>CODE128</strong> formatını kullanır. CODE128, yalnızca rakamları değil, aynı zamanda harfleri ve özel karakterleri (alfasayısal) de destekleyen yüksek yoğunluklu bir barkod türüdür.</p>
+            <ul>
+                <li><strong>Evrensel Uyumluluk:</strong> Dünyadaki tüm modern el terminalleri, optik okuyucular ve akıllı telefon kameraları tarafından sorunsuz okunur.</li>
+                <li><strong>Kompakt Tasarım:</strong> Uzun veri dizilerini çok dar alanlara sığdırabilmesi sayesinde küçük ürün etiketlerinde bile yüksek çözünürlük sağlar.</li>
+            </ul>
+
+            <h2>Neden Bizi Tercih Etmelisiniz?</h2>
+            <p>Uygulamamız tamamen <strong>istemci tarafında (Client-Side)</strong> çalışır. Bu sayede girdiğiniz barkod verileri, ürün isimleri veya arama geçmişiniz hiçbir şekilde dış sunuculara (server) aktarılmaz ve kaydedilmez. Verileriniz cihazınızda kalır. Üstelik internet bağlantınız kopsa dahi, sayfa açık olduğu sürece araçlarımızı kesintisiz kullanmaya devam edebilirsiniz.</p>
+        </div>
+
+        <footer class="site-footer">
+            <div class="footer-copy">
+                &copy; 2026 KarVARCODE Barkod Sistemleri. Tüm hakları saklıdır.
+            </div>
+            <div class="footer-links">
+                <a href="#">Gizlilik Politikası (Privacy Policy)</a>
+                <a href="#">Kullanım Koşulları</a>
+                <a href="#">İletişim</a>
+            </div>
+        </footer>
+    </section>
+    <!-- YENİ EKLENEN ALAN BİTİŞİ -->
+
     <section id="focusView" class="focus-view hidden">
         <div id="print-area" class="focus-card">
             <span class="eyebrow">Odak modu</span>
@@ -209,6 +257,7 @@
     </section>
 </div>
 
+<!-- (Lightbox ve Modal Kodları Aşağıda Aynen Korundu) -->
 <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Ürün görseli">
     <button id="lightboxClose" class="lightbox-close" type="button" aria-label="Kapat"><i class="ph ph-x"></i></button>
     <img id="lightboxImg" src="" alt="Büyütülmüş ürün görseli">
@@ -334,7 +383,6 @@
             const queryTokens = query.split(/\s+/).filter(Boolean);
             const found = searchIndex
                 .filter(({ text }) => {
-                    // Kelimelerin sırası önemli değil: "ekmek 200" ve "200 ekmek" aynı sonucu verir.
                     return queryTokens.every((token) => text.includes(token));
                 })
                 .slice(0, 48)
@@ -490,7 +538,7 @@
         $("lightbox").classList.add("open");
     }
     function closeLightbox() { $("lightbox").classList.remove("open"); }
-    $("lightbox").addEventListener("click", (event) => { if (event.target === $("lightbox") || event.target === $("lightboxClose")) closeLightbox(); });
+    $("lightbox").addEventListener("click", (event) => { if (event.target === $("lightbox") \vert{}\vert{} event.target === $("lightboxClose")) closeLightbox(); });
     document.addEventListener("keydown", (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); searchInput.focus(); }
         if (event.key === "Escape") {
