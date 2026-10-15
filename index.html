@@ -70,6 +70,8 @@
         .product-image { position: relative; height: 220px; display: grid; place-items: center; overflow: hidden; background: linear-gradient(135deg, #f6f8ff, #f2fbfa); }
         .product-image img { width: 74%; height: 74%; object-fit: contain; transition: transform .4s; }
         .product-card:hover .product-image img { transform: scale(1.08); }
+        .favorite-button { position: absolute; z-index: 1; top: 13px; left: 13px; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #ffffffb8; border-radius: 10px; color: var(--muted); background: #ffffffdf; font-size: 18px; transition: .2s; }
+        .favorite-button:hover, .favorite-button.is-favorite { color: #e25573; border-color: #f6b4c2; background: #fff4f6; }
         .zoom-hint { position: absolute; right: 13px; top: 13px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: white; background: #18202fcc; opacity: 0; transform: translateY(-5px); transition: .25s; }
         .product-card:hover .zoom-hint { opacity: 1; transform: translateY(0); }
         .card-content { padding: 19px; }
@@ -172,6 +174,7 @@
         </a>
         <div class="topbar-actions">
             <button id="bakeryTab" class="category-tab" type="button"><i class="ph ph-bread"></i> Fırın ürünleri</button>
+            <button id="favoritesTab" class="category-tab" type="button"><i class="ph ph-heart"></i> Favoriler</button>
             <div class="status-pill"><span class="status-dot"></span> Sistem hazır</div>
         </div>
     </header>
@@ -181,7 +184,7 @@
             <div class="hero">
                 <span class="eyebrow">Akıllı barkod merkezi</span>
                 <h1>Aradığını bul.<br><em>Barkodunu yönet.</em></h1>
-                <p class="hero-copy">Ürün kataloğunda saniyeler içinde arama yapın, ürün görsellerini inceleyin ve barkodları yazdırmaya hazır şekilde görüntüleyin.</p>
+                <p class="hero-copy">Ürün kataloğunda saniyeler içinde arama yapın, ürün görsellerini inceleyin ve barkodları yazdırmaya hazır şekilde görüntüleyin. Favorileriniz yalnızca bu bilgisayardaki tarayıcıda saklanır.</p>
                 <label class="search-box" for="searchInput">
                     <i class="ph ph-magnifying-glass"></i>
                     <input id="searchInput" type="search" autocomplete="off" placeholder="Ürün adı veya barkod numarası ile ara..." aria-label="Ürün ara">
@@ -305,6 +308,8 @@
     let searchIndex = [];
     let searchTimer;
     let focusReturn = "search";
+    let showingFavorites = false;
+    const favoritesStorageKey = "karvarcode-favorites";
     const bakeryBarcodes = [
         "8681573033125", "8681573033712", "8681573030063", "8681573033842",
         "8681573033316", "5941878404550", "8681573030278", "8681573033811",
@@ -319,6 +324,39 @@
     const $ = (id) => document.getElementById(id);
     const searchInput = $("searchInput");
     let selectedProduct = null;
+
+    function productKey(product) {
+        return String(product.id ?? product.barcodes?.[0] ?? product.name ?? "");
+    }
+
+    function getFavorites() {
+        try {
+            const stored = JSON.parse(localStorage.getItem(favoritesStorageKey) || "[]");
+            return Array.isArray(stored) ? stored.map(String) : [];
+        } catch (error) {
+            showMessage("Yerel kayıtlar okunamadı. Tarayıcı depolama iznini kontrol edin.", "warning");
+            return [];
+        }
+    }
+
+    function isFavorite(product) {
+        return getFavorites().includes(productKey(product));
+    }
+
+    function setFavorite(product) {
+        const key = productKey(product);
+        const favorites = getFavorites();
+        const nextFavorites = favorites.includes(key)
+            ? favorites.filter((favorite) => favorite !== key)
+            : [...favorites, key];
+        try {
+            localStorage.setItem(favoritesStorageKey, JSON.stringify(nextFavorites));
+        } catch (error) {
+            showMessage("Favori kaydedilemedi. Tarayıcı depolama iznini kontrol edin.", "warning");
+            return false;
+        }
+        return true;
+    }
 
     function normalize(value) {
         return String(value || "")
@@ -356,8 +394,35 @@
         $("focusView").classList.add("hidden");
         $("mainContent").classList.remove("hidden");
         $("searchView").classList.remove("hidden");
+        $("bakeryView").classList.add("hidden");
+        $("bakeryTab").classList.remove("active");
+        $("favoritesTab").classList.remove("active");
+        showingFavorites = false;
+        $("resultsSection").querySelector(".section-head h2").textContent = "Arama sonuçları";
+        $("emptyState").querySelector("strong").textContent = "Sonuç bulunamadı";
+        $("emptyState").querySelector("p").textContent = "Farklı bir ürün adı veya barkod deneyin.";
         focusReturn = "search";
         searchInput.focus();
+    }
+
+    function showFavorites() {
+        $("focusView").classList.add("hidden");
+        $("mainContent").classList.remove("hidden");
+        $("searchView").classList.remove("hidden");
+        $("bakeryView").classList.add("hidden");
+        $("bakeryTab").classList.remove("active");
+        $("favoritesTab").classList.add("active");
+        showingFavorites = true;
+        clearTimeout(searchTimer);
+        searchInput.value = "";
+        $("resultsSection").classList.remove("hidden");
+        $("resultsSection").querySelector(".section-head h2").textContent = "Favorilerim";
+        $("emptyState").querySelector("strong").textContent = "Henüz favori ürün yok";
+        $("emptyState").querySelector("p").textContent = "Ürün kartlarındaki kalp simgesine tıklayarak favori ekleyin.";
+        const favorites = new Set(getFavorites());
+        const favoriteProducts = products.filter((product) => favorites.has(productKey(product)));
+        renderProducts(favoriteProducts, 1, $("productGrid"), $("resultCount"), $("emptyState"));
+        requestAnimationFrame(() => $("resultsSection").scrollIntoView({ behavior: "smooth", block: "start" }));
     }
 
     function showBakery() {
@@ -391,6 +456,11 @@
     }
 
     searchInput.addEventListener("input", (event) => {
+        if (showingFavorites) {
+            showingFavorites = false;
+            $("favoritesTab").classList.remove("active");
+            $("resultsSection").querySelector(".section-head h2").textContent = "Arama sonuçları";
+        }
         clearTimeout(searchTimer);
         const query = normalize(event.target.value);
         if (!query) {
@@ -437,6 +507,24 @@
             zoom.className = "zoom-hint";
             zoom.innerHTML = '<i class="ph ph-arrows-out"></i>';
             image.append(zoom);
+            const favoriteButton = document.createElement("button");
+            const favorite = isFavorite(product);
+            favoriteButton.type = "button";
+            favoriteButton.className = `favorite-button${favorite ? " is-favorite" : ""}`;
+            favoriteButton.setAttribute("aria-label", favorite ? "Favorilerden çıkar" : "Favorilere ekle");
+            favoriteButton.innerHTML = `<i class="ph ph-heart${favorite ? "-fill" : ""}"></i>`;
+            favoriteButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                if (!setFavorite(product)) return;
+                const nowFavorite = isFavorite(product);
+                favoriteButton.classList.toggle("is-favorite", nowFavorite);
+                favoriteButton.innerHTML = `<i class="ph ph-heart${nowFavorite ? "-fill" : ""}"></i>`;
+                favoriteButton.setAttribute("aria-label", nowFavorite ? "Favorilerden çıkar" : "Favorilere ekle");
+                if (showingFavorites && !nowFavorite) {
+                    showFavorites();
+                }
+            });
+            image.append(favoriteButton);
             const content = document.createElement("div");
             content.className = "card-content";
             const title = document.createElement("h3");
@@ -522,6 +610,7 @@
 
     $("closeFocusButton").addEventListener("click", showSearch);
     $("bakeryTab").addEventListener("click", showBakery);
+    $("favoritesTab").addEventListener("click", showFavorites);
     $("printFocusButton").addEventListener("click", () => window.print());
     $("productModalClose").addEventListener("click", closeProductModal);
     $("productModal").addEventListener("click", (event) => {
