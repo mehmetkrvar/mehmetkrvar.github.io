@@ -1,0 +1,15 @@
+{
+  "name": "karvarcode",
+  "version": "1.0.0",
+  "description": "KarVARCODE - Akıllı Barkod Merkezi",
+  "author": "mehmetkrvar",
+  "keywords": [
+    "barcode",
+    "code128",
+    "product-search",
+    "karvarcode"
+  ],
+  "dependencies": {
+    "@vercel/speed-insights": "^1.0.0"
+  }
+}
