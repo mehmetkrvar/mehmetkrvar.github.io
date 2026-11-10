@@ -325,6 +325,37 @@
     const $ = (id) => document.getElementById(id);
     const searchInput = $("searchInput");
     let selectedProduct = null;
+    const analyticsSessionKey = "karvarcode-analytics-session";
+
+    function getAnalyticsSessionId() {
+        let sessionId = sessionStorage.getItem(analyticsSessionKey);
+        if (!sessionId) {
+            sessionId = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            sessionStorage.setItem(analyticsSessionKey, sessionId);
+        }
+        return sessionId;
+    }
+
+    function trackEvent(event, data = {}) {
+        const payload = {
+            event,
+            data,
+            session_id: getAnalyticsSessionId(),
+            page: location.pathname,
+            language: navigator.language,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            viewport: { width: window.innerWidth, height: window.innerHeight }
+        };
+        if (typeof window.va === "function") {
+            window.va("event", { name: event, data });
+        }
+        fetch("/api/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            keepalive: true
+        }).catch(() => {});
+    }
 
     function productKey(product) {
         return String(product.id ?? product.barcodes?.[0] ?? product.name ?? "");
@@ -370,6 +401,7 @@
     }
 
     async function init() {
+        trackEvent("page_viewed");
         try {
             const response = await fetch("product.json");
             if (!response.ok) throw new Error("product.json yüklenemedi");
@@ -407,6 +439,7 @@
     }
 
     function showFavorites() {
+        trackEvent("favorites_view_opened");
         $("focusView").classList.add("hidden");
         $("mainContent").classList.remove("hidden");
         $("searchView").classList.remove("hidden");
@@ -427,6 +460,7 @@
     }
 
     function showBakery() {
+        trackEvent("bakery_view_opened");
         $("focusView").classList.add("hidden");
         $("mainContent").classList.remove("hidden");
         $("searchView").classList.remove("hidden");
@@ -478,6 +512,10 @@
                 })
                 .slice(0, 48)
                 .map(({ product }) => product);
+            trackEvent("product_searched", {
+                query: query.slice(0, 80),
+                result_count: found.length
+            });
             renderProducts(found, queryTokens.length, $("productGrid"), $("resultCount"), $("emptyState"));
         }, 90);
     });
@@ -521,6 +559,10 @@
                 favoriteButton.classList.toggle("is-favorite", nowFavorite);
                 favoriteButton.innerHTML = `<i class="ph ph-heart${nowFavorite ? "-fill" : ""}"></i>`;
                 favoriteButton.setAttribute("aria-label", nowFavorite ? "Favorilerden çıkar" : "Favorilere ekle");
+                trackEvent(nowFavorite ? "favorite_added" : "favorite_removed", {
+                    product_id: productKey(product),
+                    product_name: String(product.name || "").slice(0, 120)
+                });
                 if (showingFavorites && !nowFavorite) {
                     showFavorites();
                 }
@@ -551,10 +593,22 @@
             bottom.append(value);
             content.append(bottom);
             card.append(image, content);
-            card.addEventListener("click", () => openProductModal(product, barcode, img.src));
+            card.addEventListener("click", () => {
+                trackEvent("product_opened", {
+                    product_id: productKey(product),
+                    product_name: String(product.name || "").slice(0, 120),
+                    has_barcode: Boolean(barcode)
+                });
+                openProductModal(product, barcode, img.src);
+            });
             card.addEventListener("keydown", (event) => {
                 if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
+                    trackEvent("product_opened", {
+                        product_id: productKey(product),
+                        product_name: String(product.name || "").slice(0, 120),
+                        has_barcode: Boolean(barcode)
+                    });
                     openProductModal(product, barcode, img.src);
                 }
             });
@@ -628,6 +682,7 @@
     $("printCustomButton").addEventListener("click", () => {
         const value = $("customBarcodeInput").value.trim();
         if (!value) return;
+        trackEvent("barcode_printed", { source: "custom" });
         openFocus(value, "Manuel oluşturulan barkod");
         setTimeout(() => window.print(), 150);
     });
@@ -638,11 +693,15 @@
         if (!value) { $("customBarcodeInput").focus(); return; }
         const svg = $("customBarcodeSvg");
         svg.replaceChildren();
-        if (generateBarcode(svg, value)) result.classList.add("visible");
+        if (generateBarcode(svg, value)) {
+            trackEvent("barcode_generated", { source: "custom" });
+            result.classList.add("visible");
+        }
         else { result.classList.remove("visible"); alert("Bu değer Code 128 barkodu için uygun değil."); }
     }
 
     function openLightbox(src, alt) {
+        trackEvent("image_opened", { source: "product" });
         $("lightboxImg").src = src;
         $("lightboxImg").alt = alt;
         $("lightbox").classList.add("open");
